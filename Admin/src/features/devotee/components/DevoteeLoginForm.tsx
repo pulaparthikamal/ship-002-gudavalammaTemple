@@ -11,7 +11,7 @@ import { FormInputText } from '@/components/forms/FormInputText'
 import { FormPassword } from '@/components/forms/FormPassword'
 import { clearAuthError, selectAuthError, setCredentials } from '@/features/auth/authSlice'
 import { useLoginMutation } from '@/features/auth/services/authApi'
-import { useLoginLanguage } from '@/features/auth/i18n/useLoginLanguage'
+import { useDevoteeLanguage } from '@/features/devotee/i18n/useDevoteeLanguage'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { useToast } from '@/hooks/useToast'
 import type { LoginFormValues } from '@/schemas/authSchema'
@@ -23,31 +23,19 @@ type LoginLocationState = {
   reason?: string
 }
 
-const defaultValues: LoginFormValues = {
-  email: '',
-  password: '',
-  rememberMe: false,
-}
-
-const REMEMBERED_EMAIL_KEY = 'auth:rememberedEmail'
-const REMEMBERED_CREDENTIALS_KEY = 'auth:rememberedCredentials'
+const REMEMBERED_EMAIL_KEY = 'devotee:rememberedEmail'
+const REMEMBERED_CREDENTIALS_KEY = 'devotee:rememberedCredentials'
 
 function readRememberedCredentials() {
   if (typeof window === 'undefined') {
-    return {
-      email: '',
-      password: '',
-    }
+    return { email: '', password: '' }
   }
 
   try {
     const rememberedCredentials = window.localStorage.getItem(REMEMBERED_CREDENTIALS_KEY)
 
     if (rememberedCredentials) {
-      const parsedValue = JSON.parse(rememberedCredentials) as {
-        email?: unknown
-        password?: unknown
-      }
+      const parsedValue = JSON.parse(rememberedCredentials) as { email?: unknown; password?: unknown }
 
       return {
         email: typeof parsedValue.email === 'string' ? parsedValue.email : '',
@@ -60,10 +48,7 @@ function readRememberedCredentials() {
       password: '',
     }
   } catch {
-    return {
-      email: '',
-      password: '',
-    }
+    return { email: '', password: '' }
   }
 }
 
@@ -76,10 +61,7 @@ function applyRememberMePreference(values: LoginFormValues) {
     if (values.rememberMe) {
       window.localStorage.setItem(
         REMEMBERED_CREDENTIALS_KEY,
-        JSON.stringify({
-          email: values.email.trim(),
-          password: values.password,
-        }),
+        JSON.stringify({ email: values.email.trim(), password: values.password }),
       )
       window.localStorage.setItem(REMEMBERED_EMAIL_KEY, values.email.trim())
       return
@@ -96,21 +78,21 @@ function getLoginDefaultValues(): LoginFormValues {
   const rememberedCredentials = readRememberedCredentials()
 
   return {
-    ...defaultValues,
     email: rememberedCredentials.email,
     password: rememberedCredentials.password,
     rememberMe: Boolean(rememberedCredentials.email || rememberedCredentials.password),
   }
 }
 
-export function LoginForm() {
+export function DevoteeLoginForm() {
   const dispatch = useAppDispatch()
   const { showToast } = useToast()
   const navigate = useNavigate()
   const location = useLocation()
   const authError = useAppSelector(selectAuthError)
   const [login, { error, isLoading }] = useLoginMutation()
-  const { t } = useLoginLanguage()
+  const { t } = useDevoteeLanguage()
+
   const localizedLoginSchema = useMemo(
     () =>
       z.object({
@@ -120,6 +102,7 @@ export function LoginForm() {
       }),
     [t],
   )
+
   const {
     control,
     handleSubmit,
@@ -131,7 +114,7 @@ export function LoginForm() {
   })
 
   const locationState = location.state as LoginLocationState | null
-  const redirectTo = locationState?.from?.pathname ?? '/dashboard'
+  const redirectTo = locationState?.from?.pathname ?? '/devotee/dashboard'
   const formError = authError ?? getApiErrorMessage(error, '')
 
   const onSubmit = async (values: LoginFormValues) => {
@@ -141,7 +124,7 @@ export function LoginForm() {
       const response = await login(values).unwrap()
 
       applyRememberMePreference(values)
-      dispatch(setCredentials(toAuthSession(response, 'staff')))
+      dispatch(setCredentials(toAuthSession(response, 'devotee')))
       showToast({
         severity: 'success',
         summary: response.respMessage ?? t('loginSuccessTitle'),
@@ -159,38 +142,33 @@ export function LoginForm() {
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit(onSubmit)} noValidate>
-      {formError ? <Message severity="error" text={formError} className="w-full justify-start" style={{marginBottom: '0.75rem'}} /> : null}
+      {formError ? <Message severity="error" text={formError} className="w-full justify-start" style={{ marginBottom: '0.75rem' }} /> : null}
 
       <FormInputText
         control={control}
         name="email"
-        label={t('emailLabel')}
-        placeholder={t('emailPlaceholder')}
+        label={t('loginEmailLabel')}
+        placeholder={t('loginEmailPlaceholder')}
         autoComplete="email"
       />
       <FormPassword
         control={control}
         name="password"
-        label={t('passwordLabel')}
-        placeholder={t('passwordPlaceholder')}
+        label={t('loginPasswordLabel')}
+        placeholder={t('loginPasswordPlaceholder')}
         autoComplete="current-password"
       />
 
       <div className="flex items-center justify-between gap-4">
-        <FormCheckbox
-          control={control}
-          name="rememberMe"
-          label={t('rememberMe')}
-          compact
-        />
-        <Link to="/forgot-password" className="text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-hover)]">
-          {t('forgotPassword')}
+        <FormCheckbox control={control} name="rememberMe" label={t('loginRememberMe')} compact />
+        <Link to="/devotee/forgot-password" className="text-sm font-medium">
+          {t('loginForgotPassword')}
         </Link>
       </div>
 
       <Button
         type="submit"
-        label={isLoading || isSubmitting ? t('signingIn') : t('signIn')}
+        label={isLoading || isSubmitting ? t('loginSigningIn') : t('loginSignIn')}
         icon="pi pi-arrow-right"
         iconPos="right"
         loading={isLoading || isSubmitting}

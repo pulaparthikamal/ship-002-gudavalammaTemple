@@ -2,7 +2,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { selectAuthAudience, selectIsAuthenticated, selectIsSessionExpired } from '@/features/auth/authSlice'
 import { useAppSelector } from '@/hooks/redux'
 
-export function ProtectedRoute() {
+export function DevoteeProtectedRoute() {
   const location = useLocation()
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const isSessionExpired = useAppSelector(selectIsSessionExpired)
@@ -11,7 +11,7 @@ export function ProtectedRoute() {
   if (!isAuthenticated) {
     return (
       <Navigate
-        to="/login"
+        to="/devotee/login"
         replace
         state={{
           from: location,
@@ -21,8 +21,8 @@ export function ProtectedRoute() {
     )
   }
 
-  if (audience === 'devotee') {
-    return <Navigate to="/devotee/dashboard" replace />
+  if (audience === 'staff') {
+    return <Navigate to="/dashboard" replace />
   }
 
   return <Outlet />

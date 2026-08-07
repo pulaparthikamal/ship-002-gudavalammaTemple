@@ -2,7 +2,7 @@ import { Navigate, Outlet } from 'react-router-dom'
 import { selectAuthAudience, selectIsAuthenticated } from '@/features/auth/authSlice'
 import { useAppSelector } from '@/hooks/redux'
 
-export function PublicOnlyRoute() {
+export function DevoteePublicOnlyRoute() {
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const audience = useAppSelector(selectAuthAudience)
 
@@ -10,5 +10,5 @@ export function PublicOnlyRoute() {
     return <Outlet />
   }
 
-  return <Navigate to={audience === 'devotee' ? '/devotee/dashboard' : '/dashboard'} replace />
+  return <Navigate to={audience === 'staff' ? '/dashboard' : '/devotee/dashboard'} replace />
 }

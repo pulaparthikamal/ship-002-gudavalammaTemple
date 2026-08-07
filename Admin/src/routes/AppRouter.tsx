@@ -10,9 +10,9 @@ import { CleanupTimelinePage } from '@/pages/CleanupTimelinePage'
 import { FileScannerPage } from '@/pages/FileScannerPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
 import { RcmRoutes } from './RcmRoutes'
+import { DevoteeRoutes } from './DevoteeRoutes'
 import { MineCareAiRoutes } from './MineCareAiRoutes'
 import { ProfilePage } from '@/pages/ProfilePage'
-import { RegisterPage } from '@/pages/RegisterPage'
 import { ServerReportsPage } from '@/pages/ServerReportsPage'
 import { ServerActivityPage } from '@/pages/ServerActivityPage'
 import { ServerMetricsPage } from '@/pages/ServerMetricsPage'
@@ -33,9 +33,10 @@ export function AppRouter() {
     <Routes>
       <Route element={<PublicOnlyRoute />}>
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       </Route>
+
+      <Route path="/devotee/*" element={<DevoteeRoutes />} />
 
       <Route path="/social/approval/:token" element={<SocialApprovalPage />} />
 

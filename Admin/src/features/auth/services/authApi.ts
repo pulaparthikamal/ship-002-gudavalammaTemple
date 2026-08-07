@@ -25,7 +25,7 @@ export const authApi = apiSlice.injectEndpoints({
     }),
     register: builder.mutation<AuthMutationResponse, RegisterRequest>({
       query: (payload) => ({
-        url: '/users/register',
+        url: '/auth/register',
         method: 'POST',
         data: payload,
         secured: false,

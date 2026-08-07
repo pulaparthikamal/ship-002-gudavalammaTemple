@@ -1,4 +1,4 @@
-import type { AuthSession, AuthUser, LoginResponse, LoginResponseUser } from '@/types/auth'
+import type { AuthAudience, AuthSession, AuthUser, LoginResponse, LoginResponseUser } from '@/types/auth'
 
 function toDisplayName(user: LoginResponseUser) {
   return [user.firstName, user.lastName].filter(Boolean).join(' ').trim() || user.email
@@ -22,7 +22,7 @@ function normalizeAuthUser(response: LoginResponse): AuthUser {
   }
 }
 
-export function toAuthSession(response: LoginResponse): AuthSession {
+export function toAuthSession(response: LoginResponse, audience: AuthAudience): AuthSession {
   return {
     accessToken: response.accessToken,
     refreshToken: response.refreshToken ?? null,
@@ -31,5 +31,6 @@ export function toAuthSession(response: LoginResponse): AuthSession {
       (response.expiresIn ? Date.now() + response.expiresIn * 1000 : null),
     user: normalizeAuthUser(response),
     loginData: response.data ?? null,
+    audience,
   }
 }
