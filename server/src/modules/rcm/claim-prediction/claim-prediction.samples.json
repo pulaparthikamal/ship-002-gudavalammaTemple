@@ -1,0 +1,144 @@
+{
+  "patients": [
+    {
+      "_id": "662a5b2e1f2a3b4c5d6e7f80",
+      "medicalRecordNumber": "MRN-1001",
+      "firstName": "Satyajeet",
+      "lastName": "Sahu",
+      "dateOfBirth": "1990-05-15T00:00:00.000Z",
+      "gender": "Male",
+      "email": "satyajeet@example.com",
+      "mobileNumber": "9876543210",
+      "address": {
+        "addressLine1": "123 Tech Park",
+        "city": "Bhubaneswar",
+        "state": "Odisha",
+        "zipCode": "751024",
+        "country": "India"
+      },
+      "patientStatus": "Active"
+    }
+  ],
+  "providers": [
+    {
+      "_id": "662a5b2e1f2a3b4c5d6e7f81",
+      "firstName": "Jane",
+      "lastName": "Doe",
+      "credentials": "MD",
+      "specialty": "Internal Medicine",
+      "npi": "1234567890",
+      "providerType": "Physician",
+      "billingProviderFlag": true,
+      "renderingProviderFlag": true
+    }
+  ],
+  "facilities": [
+    {
+      "_id": "662a5b2e1f2a3b4c5d6e7f82",
+      "facilityName": "City Hospital",
+      "facilityCode": "CH001",
+      "npi": "0987654321",
+      "placeOfServiceCode": "11",
+      "city": "Bhubaneswar",
+      "state": "Odisha"
+    }
+  ],
+  "payers": [
+    {
+      "_id": "662a5b2e1f2a3b4c5d6e7f83",
+      "payerId": "PAYER-001",
+      "payerName": "Medicare Advantage",
+      "payerType": "Commercial",
+      "activeFlag": true
+    }
+  ],
+  "claims": [
+    {
+      "_id": "662a5b2e1f2a3b4c5d6e7f84",
+      "patientId": "662a5b2e1f2a3b4c5d6e7f80",
+      "payerId": "PAYER-001",
+      "billingProviderId": "662a5b2e1f2a3b4c5d6e7f81",
+      "renderingProviderId": "662a5b2e1f2a3b4c5d6e7f81",
+      "facilityId": "662a5b2e1f2a3b4c5d6e7f82",
+      "claimDate": "2024-04-20T10:00:00.000Z",
+      "totalChargeAmount": 250.00,
+      "claimStatus": "Pending",
+      "claimLines": [
+        {
+          "lineNumber": 1,
+          "cptCode": "99213",
+          "units": 1,
+          "chargeAmount": 150.00,
+          "serviceDateFrom": "2024-04-20T10:00:00.000Z"
+        },
+        {
+          "lineNumber": 2,
+          "cptCode": "80053",
+          "units": 1,
+          "chargeAmount": 100.00,
+          "serviceDateFrom": "2024-04-20T10:00:00.000Z"
+        }
+      ]
+    }
+  ],
+  "claimPredictions": [
+    {
+      "claimId": "662a5b2e1f2a3b4c5d6e7f84",
+      "cptCode": "99213",
+      "payerId": "PAYER-001",
+      "lineNumber": 1,
+      "renderingProviderId": "662a5b2e1f2a3b4c5d6e7f81",
+      "billingProviderId": "662a5b2e1f2a3b4c5d6e7f81",
+      "facilityId": "662a5b2e1f2a3b4c5d6e7f82",
+      "units": 1,
+      "chargeAmount": 150.00,
+      "predictedAllowed": 115.50,
+      "predictedPaid": 92.40,
+      "predictedPatientResponsibility": 23.10,
+      "expectedAllowedPercentage": 0.77,
+      "expectedPaidPercentage": 0.62,
+      "confidenceScore": 0.86,
+      "denialRiskScore": 0.18,
+      "eligibilityRiskScore": 0.00,
+      "authorizationRiskScore": 0.00,
+      "paymentVarianceScore": 0.23,
+      "riskLevel": "Low",
+      "workflowStage": "Ready for Submission",
+      "sampleSize": 42,
+      "source": "hybrid",
+      "riskFactors": [],
+      "nextBestActions": ["Claim is prediction-ready; continue normal submission or follow-up workflow."],
+      "evidence": ["Latest eligibility status: Eligible / Active.", "Historical payer/CPT payments found: 42."],
+      "explanation": "Predicted from hybrid logic for CPT 99213. Historical payment sample size: 42. Workflow stage: Ready for Submission. Risk level: Low."
+    },
+    {
+      "claimId": "662a5b2e1f2a3b4c5d6e7f84",
+      "cptCode": "80053",
+      "payerId": "PAYER-001",
+      "lineNumber": 2,
+      "renderingProviderId": "662a5b2e1f2a3b4c5d6e7f81",
+      "billingProviderId": "662a5b2e1f2a3b4c5d6e7f81",
+      "facilityId": "662a5b2e1f2a3b4c5d6e7f82",
+      "units": 1,
+      "chargeAmount": 100.00,
+      "predictedAllowed": 45.00,
+      "predictedPaid": 37.80,
+      "predictedPatientResponsibility": 7.20,
+      "expectedAllowedPercentage": 0.45,
+      "expectedPaidPercentage": 0.38,
+      "confidenceScore": 0.78,
+      "denialRiskScore": 0.32,
+      "eligibilityRiskScore": 0.00,
+      "authorizationRiskScore": 0.00,
+      "paymentVarianceScore": 0.55,
+      "riskLevel": "Medium",
+      "workflowStage": "Ready for Submission",
+      "sampleSize": 8,
+      "source": "workflow_rules",
+      "riskFactors": ["High variance between charge amount and expected allowed amount."],
+      "nextBestActions": ["Review payer contract or charge master pricing before submission."],
+      "evidence": ["Fee schedule allowed amount found: $45."],
+      "explanation": "Predicted from workflow rules for CPT 80053. Sparse historical payment sample was available. Workflow stage: Ready for Submission. Risk level: Medium."
+    }
+  ]
+}

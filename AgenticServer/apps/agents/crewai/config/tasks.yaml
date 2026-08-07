@@ -1,0 +1,43 @@
+# Standard Tasks Configuration
+draft_task:
+  description: >
+    Research and write a draft about {topic}. 
+    Use the following context if available: {research_text}
+  expected_output: >
+    A 500-word draft in markdown format.
+  agent: writer
+
+review_task:
+  description: >
+    Review the draft provided by the writer. 
+    Focus on {tone} and {brand_voice}.
+  expected_output: >
+    A revised version of the draft with editorial notes.
+  agent: reviewer
+
+optimize_task:
+  description: >
+    Finalize the content for {audience}. 
+    Add a call to action: {call_to_action}
+  expected_output: >
+    The final publication-ready version.
+  agent: optimizer
+
+prediction_task:
+  description: >
+    Analyze the following input: {topic}. 
+    Historical stats provided: {historical_stats}.
+    Research findings: {research_text}.
+    Predict the expected allowed amount and paid amount. 
+    Return the result in JSON format with fields: allowed, paid, confidence, reasoning.
+  expected_output: >
+    A JSON object containing allowed amount, paid amount, confidence score (0-1), and detailed reasoning.
+  agent: claim_analyst
+
+maintenance_decision_task:
+  description: >
+    Review scanned server files and user configuration. Recommend delete, archive,
+    ignore, or review. Every recommendation must include an explanation and trace.
+  expected_output: >
+    JSON with decisions containing path, action, confidence, reason, and decisionTrace.
+  agent: decision_agent

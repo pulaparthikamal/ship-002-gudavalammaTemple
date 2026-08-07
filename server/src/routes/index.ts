@@ -1,0 +1,48 @@
+import { Router } from 'express';
+import authRoutes from '../modules/auth/auth.route';
+import userRoutes from '../modules/user/user.route';
+import roleRoutes from '../modules/role/role.route';
+import menuRoutes from '../modules/menu/menu.route';
+import settingsRoutes from '../modules/settings/settings.route';
+import tokenRoutes from '../modules/token/token.route';
+import dashboardRoutes from '../modules/dashboard/dashboard.route';
+import activityRoutes from '../modules/activity/activity.route';
+import rcmRoutes from './rcm';
+import serverAgentRoutes from './serverAgent';
+import deploymentAgentRoutes from './deploymentAgent';
+import incidentsRoutes from '../modules/serverManagement/routes/incidents.route';
+import mediaCategoryRoutes from '../modules/mediaCategory/mediaCategory.route';
+import interestTopicRoutes from '../modules/interestTopic/interestTopic.route';
+import publishingFrequencyRoutes from '../modules/publishingFrequency/publishingFrequency.route';
+import toneRoutes from '../modules/tone/tone.route';
+import platformRoutes from '../modules/platform/platform.route';
+import tableViewRoutes from '../modules/tableView/tableView.route';
+import uploadRoutes from '../modules/upload/upload.route';
+import socialRoutes from './social.route';
+import mineCareAiRoutes from '../modules/mineCareAi/mineCareAi.route';
+
+const router = Router();
+
+router.use('/auth', authRoutes);
+router.use('/users', userRoutes);
+router.use('/roles', roleRoutes);
+router.use('/menus', menuRoutes);
+router.use('/settings', settingsRoutes);
+router.use('/tokens', tokenRoutes);
+router.use('/dashboards', dashboardRoutes);
+router.use('/activities', activityRoutes);
+router.use('/rcm', rcmRoutes);
+router.use('/serverAgent', serverAgentRoutes);
+router.use('/deploymentAgent', deploymentAgentRoutes);
+router.use('/incidents', incidentsRoutes);
+router.use('/mediaCategories', mediaCategoryRoutes);
+router.use('/interestedTopics', interestTopicRoutes);
+router.use('/publishingFrequencies', publishingFrequencyRoutes);
+router.use('/tones', toneRoutes);
+router.use('/platforms', platformRoutes);
+router.use('/tableViews', tableViewRoutes);
+router.use('/upload', uploadRoutes);
+router.use('/social', socialRoutes);
+router.use('/minecare-ai', mineCareAiRoutes);
+
+export default router;
