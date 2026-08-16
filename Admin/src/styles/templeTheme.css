@@ -1,0 +1,47 @@
+/*
+ * Devotional theme, scoped to the "Temple Management" screens only via
+ * `.temple-scope` — overrides the same CSS variables the generic admin
+ * shell (index.css) and PrimeReact component overrides already key off of,
+ * so CrudPage/CommonTable/CommonForm/Dialog inherit it without a rewrite.
+ * Legacy generic screens (Users/Roles/Settings/Dashboard) are untouched.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Mukta:wght@400;500;600;700&display=swap');
+
+.temple-scope {
+  --color-primary: #7c1220;
+  --color-primary-hover: #4a0b14;
+  --color-primary-active: #4a0b14;
+  --color-primary-soft: rgba(124, 18, 32, 0.1);
+  --color-ring: rgba(169, 121, 12, 0.35);
+  --color-border: #e7d9b8;
+  --color-border-strong: #d7be86;
+  --color-surface: #fffdf8;
+  --color-surface-elevated: #fffdf8;
+  --color-surface-muted: #f2e7cc;
+  --color-page: #faf3e2;
+  --color-text: #2b1710;
+  --color-text-strong: #2b1710;
+  --color-text-muted: #7c6850;
+  --color-hover: #f2e7cc;
+  font-family: 'Mukta', sans-serif;
+}
+
+.temple-scope h1,
+.temple-scope h2,
+.temple-scope h3 {
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.01em;
+}
+
+/* Sidebar "Temple Management" section gets a subtle gold accent so it
+   reads as its own zone without repainting the whole nav. */
+.sidebar-temple-section {
+  border-top: 1px solid #d7be86;
+  margin-top: 6px;
+  padding-top: 6px;
+}
+
+.sidebar-temple-section > * {
+  --color-primary: #7c1220;
+  --color-primary-soft: rgba(124, 18, 32, 0.1);
+}

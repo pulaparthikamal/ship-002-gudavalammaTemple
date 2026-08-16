@@ -8,33 +8,33 @@ import { z } from 'zod'
 import { FormInputText } from '@/components/forms/FormInputText'
 import { FormPassword } from '@/components/forms/FormPassword'
 import { useRegisterMutation } from '@/features/auth/services/authApi'
-import { useDevoteeLanguage } from '@/features/devotee/i18n/useDevoteeLanguage'
+import { useDevoteeTranslation } from '@/i18n/useTranslation'
 import { useToast } from '@/hooks/useToast'
 import { getApiErrorMessage } from '@/services/api/apiError'
 
 export function DevoteeRegisterForm() {
   const navigate = useNavigate()
   const { showToast } = useToast()
-  const { t } = useDevoteeLanguage()
+  const { t } = useDevoteeTranslation()
   const [register, { error, isLoading }] = useRegisterMutation()
 
   const registerSchema = useMemo(
     () =>
       z
         .object({
-          firstName: z.string().trim().min(2, t('errorFirstNameMin')),
-          lastName: z.string().trim().min(2, t('errorLastNameMin')),
-          email: z.string().trim().email(t('errorInvalidEmail')),
+          firstName: z.string().trim().min(2, t('devotee.errorFirstNameMin')),
+          lastName: z.string().trim().min(2, t('devotee.errorLastNameMin')),
+          email: z.string().trim().email(t('devotee.errorInvalidEmail')),
           phone: z
             .string()
             .trim()
-            .refine((value) => value.length === 0 || value.length >= 8, t('errorPhoneMin')),
-          password: z.string().min(8, t('errorPasswordMin')),
-          confirmPassword: z.string().min(8, t('errorPasswordMin')),
+            .refine((value) => value.length === 0 || value.length >= 8, t('devotee.errorPhoneMin')),
+          password: z.string().min(8, t('devotee.errorPasswordMin')),
+          confirmPassword: z.string().min(8, t('devotee.errorPasswordMin')),
         })
         .superRefine((values, context) => {
           if (values.password !== values.confirmPassword) {
-            context.addIssue({ code: 'custom', path: ['confirmPassword'], message: t('errorConfirmMismatch') })
+            context.addIssue({ code: 'custom', path: ['confirmPassword'], message: t('devotee.errorConfirmMismatch') })
           }
         }),
     [t],
@@ -75,14 +75,14 @@ export function DevoteeRegisterForm() {
 
       showToast({
         severity: 'success',
-        summary: response.respMessage ?? response.message ?? t('registerSuccessTitle'),
-        detail: t('registerSuccessDetail'),
+        summary: response.respMessage ?? response.message ?? t('devotee.registerSuccessTitle'),
+        detail: t('devotee.registerSuccessDetail'),
       })
       navigate('/devotee/login', { replace: true })
     } catch (submitError) {
       showToast({
         severity: 'error',
-        summary: t('registerFailedTitle'),
+        summary: t('devotee.registerFailedTitle'),
         detail: getApiErrorMessage(submitError),
       })
     }
@@ -93,34 +93,34 @@ export function DevoteeRegisterForm() {
       {formError ? <Message severity="error" text={formError} className="w-full justify-start" style={{ marginBottom: '0.75rem' }} /> : null}
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormInputText control={control} name="firstName" label={t('firstNameLabel')} placeholder={t('firstNamePlaceholder')} />
-        <FormInputText control={control} name="lastName" label={t('lastNameLabel')} placeholder={t('lastNamePlaceholder')} />
+        <FormInputText control={control} name="firstName" label={t('devotee.firstNameLabel')} placeholder={t('devotee.firstNamePlaceholder')} />
+        <FormInputText control={control} name="lastName" label={t('devotee.lastNameLabel')} placeholder={t('devotee.lastNamePlaceholder')} />
       </div>
 
-      <FormInputText control={control} name="email" label={t('emailLabel')} placeholder={t('emailPlaceholder')} autoComplete="email" />
+      <FormInputText control={control} name="email" label={t('devotee.emailLabel')} placeholder={t('devotee.emailPlaceholder')} autoComplete="email" />
 
       <FormInputText
         control={control}
         name="phone"
-        label={t('phoneLabel')}
-        placeholder={t('phonePlaceholder')}
+        label={t('devotee.phoneLabel')}
+        placeholder={t('devotee.phonePlaceholder')}
         autoComplete="tel"
-        helperText={t('phoneHelper')}
+        helperText={t('devotee.phoneHelper')}
       />
 
-      <FormPassword control={control} name="password" label={t('passwordLabel')} placeholder={t('passwordPlaceholder')} autoComplete="new-password" />
+      <FormPassword control={control} name="password" label={t('devotee.passwordLabel')} placeholder={t('devotee.passwordPlaceholder')} autoComplete="new-password" />
 
       <FormPassword
         control={control}
         name="confirmPassword"
-        label={t('confirmPasswordLabel')}
-        placeholder={t('confirmPasswordPlaceholder')}
+        label={t('devotee.confirmPasswordLabel')}
+        placeholder={t('devotee.confirmPasswordPlaceholder')}
         autoComplete="new-password"
       />
 
       <Button
         type="submit"
-        label={isLoading || isSubmitting ? t('creatingAccount') : t('createAccountButton')}
+        label={isLoading || isSubmitting ? t('devotee.creatingAccount') : t('devotee.createAccountButton')}
         icon="pi pi-user-plus"
         iconPos="right"
         loading={isLoading || isSubmitting}
@@ -128,9 +128,9 @@ export function DevoteeRegisterForm() {
       />
 
       <div className="text-center">
-        <span className="text-sm">{t('alreadyHaveAccount')} </span>
+        <span className="text-sm">{t('devotee.alreadyHaveAccount')} </span>
         <Link to="/devotee/login" className="text-sm font-medium">
-          {t('signInLink')}
+          {t('devotee.signInLink')}
         </Link>
       </div>
     </form>

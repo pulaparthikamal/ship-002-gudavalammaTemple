@@ -1,29 +1,79 @@
-import type { SevaCategory } from '@/features/devotee/i18n/devoteeContent'
-import { sevaCatalog } from '@/features/devotee/i18n/devoteeContent'
-import { useDevoteeLanguage } from '@/features/devotee/i18n/useDevoteeLanguage'
+import { useEffect, useState } from 'react'
+import type { SevaCategory } from '@/services/api/endpoints/sevaApi'
+import { useCreateSevaBookingMutation, useGetSevasQuery } from '@/services/api/endpoints/sevaApi'
+import { useDevoteeTranslation } from '@/i18n/useTranslation'
 import { useToast } from '@/hooks/useToast'
+import { getApiErrorMessage } from '@/services/api/apiError'
+import { useGuestCheckout } from '@/features/devotee/hooks/useGuestCheckout'
+import { GuestContactFields } from '@/features/devotee/components/GuestContactFields'
+import { ScreenRenderer } from '@/components/screenBuilder/ScreenRenderer'
+import { UpiPaymentPanel } from '@/features/devotee/components/UpiPaymentPanel'
+import { formatBookingHours } from '@/utils/bookingHours'
+import { trackFunnelStep } from '@/utils/analytics'
 
-const CATEGORIES: { id: SevaCategory; nameKey: 'categoryParoksha' | 'categoryPratyaksha' | 'categorySaswata'; descKey: 'categoryParokshaDesc' | 'categoryPratyakshaDesc' | 'categorySaswataDesc' }[] = [
-  { id: 'pratyaksha', nameKey: 'categoryPratyaksha', descKey: 'categoryPratyakshaDesc' },
-  { id: 'paroksha', nameKey: 'categoryParoksha', descKey: 'categoryParokshaDesc' },
-  { id: 'saswata', nameKey: 'categorySaswata', descKey: 'categorySaswataDesc' },
+const CATEGORIES: {
+  id: SevaCategory
+  nameKey: 'devotee.categoryParoksha' | 'devotee.categoryPratyaksha' | 'devotee.categorySaswata'
+  descKey: 'devotee.categoryParokshaDesc' | 'devotee.categoryPratyakshaDesc' | 'devotee.categorySaswataDesc'
+}[] = [
+  { id: 'pratyaksha', nameKey: 'devotee.categoryPratyaksha', descKey: 'devotee.categoryPratyakshaDesc' },
+  { id: 'paroksha', nameKey: 'devotee.categoryParoksha', descKey: 'devotee.categoryParokshaDesc' },
+  { id: 'saswata', nameKey: 'devotee.categorySaswata', descKey: 'devotee.categorySaswataDesc' },
 ]
 
 export function DevoteeSevaPage() {
-  const { t, language } = useDevoteeLanguage()
+  const { t } = useDevoteeTranslation()
   const { showToast } = useToast()
-  const sevas = sevaCatalog[language]
+  const { data: sevas = [] } = useGetSevasQuery()
+  const [createSevaBooking, { isLoading: isBooking }] = useCreateSevaBookingMutation()
+  const guestCheckout = useGuestCheckout()
+  const [paidBooking, setPaidBooking] = useState<{ refId: string; amount: number; reference: string } | null>(null)
 
-  const handleBook = (name: string) => {
-    showToast({ severity: 'success', summary: t('sevaTitle'), detail: name })
+  useEffect(() => {
+    trackFunnelStep('/devotee/seva', 'seva_booking', 0, 'viewed')
+  }, [])
+
+  const handleBook = async (sevaId: string, name: string) => {
+    if (!guestCheckout.isGuestInfoValid) {
+      showToast({ severity: 'warn', summary: t('devotee.sevaTitle'), detail: t('devotee.guestCheckoutNote') })
+      return
+    }
+
+    try {
+      const created = await createSevaBooking({ sevaId, ...guestCheckout.guestPayload }).unwrap()
+      trackFunnelStep('/devotee/seva', 'seva_booking', 1, 'submitted')
+      showToast({ severity: 'success', summary: t('devotee.sevaTitle'), detail: name })
+      if (created.amount > 0) {
+        setPaidBooking({ refId: created._id, amount: created.amount, reference: name })
+      }
+    } catch (error) {
+      showToast({ severity: 'error', summary: t('devotee.sevaTitle'), detail: getApiErrorMessage(error) })
+    }
   }
 
   return (
     <div className="dp-page">
       <div className="dp-page-head">
-        <h1>{t('sevaTitle')}</h1>
-        <p>{t('sevaSubtitle')}</p>
+        <h1>{t('devotee.sevaTitle')}</h1>
+        <p>{t('devotee.sevaSubtitle')}</p>
       </div>
+
+      <ScreenRenderer screenKey="seva" />
+
+      {!guestCheckout.isAuthenticated && (
+        <GuestContactFields
+          guestName={guestCheckout.guestName}
+          onGuestNameChange={guestCheckout.setGuestName}
+          guestEmail={guestCheckout.guestEmail}
+          onGuestEmailChange={guestCheckout.setGuestEmail}
+          guestPhone={guestCheckout.guestPhone}
+          onGuestPhoneChange={guestCheckout.setGuestPhone}
+        />
+      )}
+
+      {paidBooking && (
+        <UpiPaymentPanel refId={paidBooking.refId} amount={paidBooking.amount} reference={paidBooking.reference} />
+      )}
 
       {CATEGORIES.map((category) => (
         <section key={category.id}>
@@ -36,7 +86,7 @@ export function DevoteeSevaPage() {
             {sevas
               .filter((seva) => seva.category === category.id)
               .map((seva) => (
-                <div className="dp-offer-card" key={seva.id}>
+                <div className="dp-offer-card" key={seva._id}>
                   <div className="dp-offer-media">
                     <svg viewBox="0 0 24 24">
                       <circle cx="12" cy="8" r="4" />
@@ -46,15 +96,27 @@ export function DevoteeSevaPage() {
                   <div className="dp-offer-body">
                     <h3>{seva.name}</h3>
                     <div className="meta">{seva.timing}</div>
+                    {formatBookingHours(seva.bookingOpensAt, seva.bookingClosesAt) && (
+                      <div className="meta" style={{ fontSize: 11 }}>
+                        {t('devotee.bookingHoursLabel', {
+                          hours: formatBookingHours(seva.bookingOpensAt, seva.bookingClosesAt)!,
+                        })}
+                      </div>
+                    )}
                     <div className="price">
                       ₹{seva.price.toLocaleString('en-IN')}
-                      {category.id === 'saswata' ? ` (${t('oneTime')})` : ''}
+                      {category.id === 'saswata' ? ` (${t('devotee.oneTime')})` : ''}
                     </div>
                   </div>
                   <div className="dp-offer-foot">
-                    <span style={{ fontSize: 11, color: 'var(--dp-ink-soft)' }}>{t('limitedSlots')}</span>
-                    <button type="button" className="dp-small-btn filled" onClick={() => handleBook(seva.name)}>
-                      {t('bookSeva')}
+                    <span style={{ fontSize: 11, color: 'var(--dp-ink-soft)' }}>{t('devotee.limitedSlots')}</span>
+                    <button
+                      type="button"
+                      className="dp-small-btn filled"
+                      disabled={isBooking}
+                      onClick={() => handleBook(seva._id, seva.name)}
+                    >
+                      {t('devotee.bookSeva')}
                     </button>
                   </div>
                 </div>

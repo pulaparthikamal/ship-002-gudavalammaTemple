@@ -49,6 +49,20 @@
   opacity: 0.85;
 }
 
+.temple-login-back-link {
+  margin-right: auto;
+  color: var(--tl-cream-text);
+  font-family: inherit;
+  font-size: 12px;
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+.temple-login-back-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
 .temple-login-lang-strip button {
   border: none;
   background: transparent;
@@ -73,6 +87,21 @@
 
 .temple-login-lang-strip .temple-login-sep {
   opacity: 0.4;
+}
+
+.temple-login-lang-select {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--tl-cream-text);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.temple-login-lang-select option {
+  color: var(--tl-ink);
 }
 
 .temple-login-hero {

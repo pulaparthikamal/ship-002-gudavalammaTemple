@@ -7,19 +7,19 @@ import { Message } from 'primereact/message'
 import { z } from 'zod'
 import { FormInputText } from '@/components/forms/FormInputText'
 import { useForgotPasswordMutation } from '@/features/auth/services/authApi'
-import { useDevoteeLanguage } from '@/features/devotee/i18n/useDevoteeLanguage'
+import { useDevoteeTranslation } from '@/i18n/useTranslation'
 import { useToast } from '@/hooks/useToast'
 import { getApiErrorMessage } from '@/services/api/apiError'
 import { getClientDeviceInfo } from '@/utils/deviceInfo'
 
 export function DevoteeForgotPasswordForm() {
   const { showToast } = useToast()
-  const { t } = useDevoteeLanguage()
+  const { t } = useDevoteeTranslation()
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [forgotPassword, { error, isLoading }] = useForgotPasswordMutation()
 
   const forgotPasswordSchema = useMemo(
-    () => z.object({ email: z.string().trim().email(t('errorInvalidEmail')) }),
+    () => z.object({ email: z.string().trim().email(t('devotee.errorInvalidEmail')) }),
     [t],
   )
 
@@ -46,14 +46,14 @@ export function DevoteeForgotPasswordForm() {
         entityType: 'user',
         deviceInfo: getClientDeviceInfo(),
       }).unwrap()
-      const message = response.respMessage ?? response.message ?? t('forgotDefaultSuccessMessage')
+      const message = response.respMessage ?? response.message ?? t('devotee.forgotDefaultSuccessMessage')
 
       setSuccessMessage(message)
-      showToast({ severity: 'success', summary: t('forgotResetSentTitle'), detail: message })
+      showToast({ severity: 'success', summary: t('devotee.forgotResetSentTitle'), detail: message })
     } catch (submitError) {
       showToast({
         severity: 'error',
-        summary: t('forgotRequestFailedTitle'),
+        summary: t('devotee.forgotRequestFailedTitle'),
         detail: getApiErrorMessage(submitError),
       })
     }
@@ -64,11 +64,11 @@ export function DevoteeForgotPasswordForm() {
       {successMessage ? <Message severity="success" text={successMessage} className="w-full justify-start" /> : null}
       {formError ? <Message severity="error" text={formError} className="w-full justify-start" /> : null}
 
-      <FormInputText control={control} name="email" label={t('emailLabel')} placeholder={t('emailPlaceholder')} autoComplete="email" />
+      <FormInputText control={control} name="email" label={t('devotee.emailLabel')} placeholder={t('devotee.emailPlaceholder')} autoComplete="email" />
 
       <Button
         type="submit"
-        label={isLoading || isSubmitting ? t('forgotSending') : t('forgotSendButton')}
+        label={isLoading || isSubmitting ? t('devotee.forgotSending') : t('devotee.forgotSendButton')}
         icon="pi pi-send"
         iconPos="right"
         loading={isLoading || isSubmitting}
@@ -77,7 +77,7 @@ export function DevoteeForgotPasswordForm() {
 
       <div className="text-center">
         <Link to="/devotee/login" className="text-sm font-medium">
-          {t('forgotBackToSignIn')}
+          {t('devotee.forgotBackToSignIn')}
         </Link>
       </div>
     </form>

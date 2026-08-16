@@ -77,6 +77,21 @@
   opacity: 0.4;
 }
 
+.dp-lang-select {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--dp-cream-text);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.dp-lang-select option {
+  color: var(--dp-ink);
+}
+
 /* ---------- Header / nav ---------- */
 .dp-header {
   display: flex;
@@ -170,6 +185,112 @@
 .dp-icon-btn:hover {
   background: var(--dp-gold-bright);
   color: var(--dp-cream-text);
+}
+
+.dp-icon-btn-primary {
+  background: linear-gradient(90deg, var(--dp-maroon), var(--dp-vermilion));
+  color: var(--dp-cream-text);
+  border-color: var(--dp-maroon);
+}
+
+.dp-icon-btn-primary:hover {
+  background: linear-gradient(90deg, var(--dp-maroon-deep), var(--dp-maroon));
+  color: var(--dp-cream-text);
+}
+
+.dp-home-hero {
+  text-align: center;
+  padding: 48px 24px;
+  border-radius: var(--dp-radius);
+  background: var(--dp-panel);
+  border: 1px solid var(--dp-line);
+  box-shadow: var(--dp-shadow-warm);
+  margin-bottom: 32px;
+}
+
+.dp-home-hero h1 {
+  font-family: var(--dp-font-display);
+  color: var(--dp-maroon);
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.dp-home-hero p {
+  font-family: var(--dp-font-accent);
+  color: var(--dp-ink-soft);
+  font-size: 16px;
+  max-width: 520px;
+  margin: 0 auto 24px;
+}
+
+.dp-home-hero-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.dp-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 26px;
+  border-radius: 24px;
+  border: 1px solid var(--dp-line-strong);
+  background: var(--dp-gold-pale);
+  color: var(--dp-maroon);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.dp-cta-btn:hover {
+  background: var(--dp-gold-bright);
+  color: var(--dp-cream-text);
+}
+
+.dp-cta-btn-primary {
+  background: linear-gradient(90deg, var(--dp-maroon), var(--dp-vermilion));
+  color: var(--dp-cream-text);
+  border-color: var(--dp-maroon);
+}
+
+.dp-cta-btn-primary:hover {
+  background: linear-gradient(90deg, var(--dp-maroon-deep), var(--dp-maroon));
+}
+
+.dp-social-links {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.dp-social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(251, 241, 220, 0.12);
+  text-decoration: none;
+  font-size: 15px;
+}
+
+.dp-social-link:hover {
+  background: var(--dp-gold-bright);
+}
+
+.dp-widget-heading {
+  font-family: var(--dp-font-display);
+  color: var(--dp-maroon);
+  font-size: 22px;
+  margin: 0;
+}
+
+.dp-widget-text {
+  font-family: var(--dp-font-accent);
+  color: var(--dp-ink-soft);
+  font-size: 15px;
+  margin: 0;
 }
 
 .dp-btn-primary-pill {
@@ -434,6 +555,22 @@
   border-radius: 18px;
   padding: 22px;
   box-shadow: var(--dp-shadow-soft);
+}
+
+.dp-input {
+  font-family: var(--dp-font-body);
+  font-size: 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--dp-line-strong);
+  background: var(--dp-bg);
+  color: var(--dp-ink);
+  width: 100%;
+}
+
+.dp-input:focus {
+  outline: none;
+  border-color: var(--dp-maroon);
 }
 
 .dp-cal-head {
@@ -1042,7 +1179,11 @@
   color: var(--dp-vermilion);
 }
 
-/* ---------- Auth pages (login / register / forgot password) ---------- */
+/* ---------- Auth pages (login / register / forgot password) ----------
+   Rendered inside DevoteeLayout's <main>, alongside a real header/footer
+   (not as a standalone full-viewport page) — min-height is a comfortable
+   hero size, not calc(100vh - ...), which would force excess empty space
+   now that a header and footer surround this content. */
 .dp-auth-hero {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1051,7 +1192,7 @@
   margin: 0 auto;
   padding: 48px 32px 60px;
   align-items: center;
-  min-height: calc(100vh - 42px);
+  min-height: 60vh;
 }
 
 @media (max-width: 900px) {
@@ -1141,6 +1282,35 @@
   color: var(--dp-ink-soft);
   text-align: center;
   line-height: 1.5;
+}
+
+/* Login mode toggle (Password/OTP, Email/Mobile) — a simple two-tab pill. */
+.dp-login-mode-toggle {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--dp-bg);
+  border: 1px solid var(--dp-line);
+  border-radius: 999px;
+}
+
+.dp-mode-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--dp-ink-soft);
+  font-family: var(--dp-font-body);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.dp-mode-tab.active {
+  background: var(--dp-maroon);
+  color: #fff;
 }
 
 .dp-auth-footer-link {

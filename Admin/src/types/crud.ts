@@ -305,6 +305,11 @@ export interface CrudTableAction<TItem> {
   tooltip?: string | ((item: TItem) => string)
   icon?: ReactNode
   tone?: 'default' | 'danger'
+  /**
+   * Semantic action kind, used for action-button styling. Prefer this over
+   * inferring styling from the (now-translatable, no longer English-only) label text.
+   */
+  kind?: 'view' | 'edit' | 'delete'
   disabled?: boolean | ((item: TItem) => boolean)
   loading?: boolean
   onClick: (item: TItem) => void

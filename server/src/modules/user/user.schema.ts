@@ -24,6 +24,21 @@ export const updateUserSchema = z.object({
   }),
 });
 
+export const updateOwnLocaleSchema = z.object({
+  body: z.object({
+    preferredLocale: z.enum(['en', 'te', 'hi']),
+  }),
+});
+
+export const updateOwnProfileSchema = z.object({
+  body: z.object({
+    firstName: z.string().min(2).optional(),
+    lastName: z.string().min(2).optional(),
+    email: z.string().email().optional(),
+    phone: z.string().optional(),
+  }),
+});
+
 export const updateUserStatusSchema = z.object({
   body: z.object({
     active: z.boolean(),

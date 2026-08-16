@@ -1,37 +1,32 @@
 import { Link } from 'react-router-dom'
 import { LoginForm } from '@/features/auth/components/LoginForm'
 import { TempleArtwork } from '@/features/auth/components/TempleArtwork'
-import { LOGIN_LANGUAGES } from '@/features/auth/i18n/loginTranslations'
-import { LoginLanguageProvider } from '@/features/auth/i18n/LoginLanguageContext'
-import { useLoginLanguage } from '@/features/auth/i18n/useLoginLanguage'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
+import { useStaffTranslation } from '@/i18n/useTranslation'
+import { useGetTempleProfileQuery } from '@/services/api/endpoints/templeProfileApi'
+import { resolveTempleName } from '@/utils/templeName'
 import '@/features/auth/styles/templeLogin.css'
 
 function LanguageStrip() {
-  const { language, setLanguage } = useLoginLanguage()
+  const { t } = useStaffTranslation()
 
   return (
     <div className="temple-login-lang-strip">
       <span className="temple-login-lang-icon" aria-hidden="true">
         🕉️
       </span>
-      {LOGIN_LANGUAGES.map((option, index) => (
-        <span key={option.code} style={{ display: 'flex', alignItems: 'center' }}>
-          {index > 0 ? <span className="temple-login-sep">|</span> : null}
-          <button
-            type="button"
-            className={language === option.code ? 'active' : ''}
-            onClick={() => setLanguage(option.code)}
-          >
-            {option.label}
-          </button>
-        </span>
-      ))}
+      <Link to="/" className="temple-login-back-link">
+        ← {t('login.backToTempleSite')}
+      </Link>
+      <LanguageSwitcher audience="staff" className="temple-login-lang-select" />
     </div>
   )
 }
 
 function LoginPageContent() {
-  const { t } = useLoginLanguage()
+  const { t, language } = useStaffTranslation()
+  const { data: templeProfile } = useGetTempleProfileQuery()
+  const brandName = resolveTempleName(templeProfile, language, t('login.brandName'))
 
   return (
     <>
@@ -48,22 +43,22 @@ function LoginPageContent() {
                 <circle cx="20" cy="34" r="3" fill="#c1421a" />
               </svg>
               <div>
-                <div className="temple-login-brand-name">{t('brandName')}</div>
-                <div className="temple-login-brand-subtitle">{t('brandSubtitle')}</div>
+                <div className="temple-login-brand-name">{brandName}</div>
+                <div className="temple-login-brand-subtitle">{t('login.brandSubtitle')}</div>
               </div>
             </div>
-            <p className="temple-login-eyebrow">{t('eyebrow')}</p>
+            <p className="temple-login-eyebrow">{t('login.eyebrow')}</p>
             <h1 className="temple-login-title">
-              {t('heroTitleLine1')}
+              {t('login.heroTitleLine1')}
               <br />
-              <span>{t('heroTitleHighlight')}</span>
+              <span>{t('login.heroTitleHighlight')}</span>
             </h1>
-            <p className="temple-login-tagline">{t('heroTagline')}</p>
+            <p className="temple-login-tagline">{t('login.heroTagline')}</p>
             <div className="temple-login-chips">
               <div className="temple-login-chip">
-                <span className="temple-login-dot" /> {t('chipSecure')}
+                <span className="temple-login-dot" /> {t('login.chipSecure')}
               </div>
-              <div className="temple-login-chip">{t('chipSupport')}</div>
+              <div className="temple-login-chip">{t('login.chipSupport')}</div>
             </div>
           </div>
 
@@ -73,20 +68,20 @@ function LoginPageContent() {
             <span className="temple-login-corner bl" />
             <span className="temple-login-corner br" />
 
-            <h2 className="temple-login-card-title">{t('tabLogin')}</h2>
+            <h2 className="temple-login-card-title">{t('login.tabLogin')}</h2>
 
             <LoginForm />
 
-            <p className="temple-login-card-note">{t('termsNote')}</p>
+            <p className="temple-login-card-note">{t('login.termsNote')}</p>
           </div>
 
           <p className="temple-login-devotee-link">
-            <Link to="/devotee/login">{t('devoteeCross')}</Link>
+            <Link to="/devotee/login">{t('login.devoteeCross')}</Link>
           </p>
         </div>
       </div>
       <div className="temple-login-footer">
-        {t('brandName')} · {t('brandSubtitle')}
+        {brandName} · {t('login.brandSubtitle')}
       </div>
     </>
   )
@@ -94,10 +89,8 @@ function LoginPageContent() {
 
 export function LoginPage() {
   return (
-    <LoginLanguageProvider>
-      <div className="temple-login">
-        <LoginPageContent />
-      </div>
-    </LoginLanguageProvider>
+    <div className="temple-login">
+      <LoginPageContent />
+    </div>
   )
 }

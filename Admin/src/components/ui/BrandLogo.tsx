@@ -1,8 +1,8 @@
-import logoUrl from '@/assets/do-systems-logo.png'
-import logoWhiteUrl from '@/assets/do-systems-logo-white.png'
-import markUrl from '@/assets/do-systems-logo.png'
+import { TempleGopuramMark } from './TempleGopuramMark'
 import { cn } from '@/utils/classNames'
-import { useTheme } from '@/hooks/useTheme'
+import { useGetTempleProfileQuery } from '@/services/api/endpoints/templeProfileApi'
+import { useStaffTranslation } from '@/i18n/useTranslation'
+import { resolveTempleName } from '@/utils/templeName'
 
 interface BrandLogoProps {
   variant?: 'full' | 'mark'
@@ -11,14 +11,19 @@ interface BrandLogoProps {
 
 export function BrandLogo({ variant = 'full', className }: BrandLogoProps) {
   const isMark = variant === 'mark'
-  const { resolvedTheme } = useTheme()
-  const fullLogoUrl = resolvedTheme === 'dark' ? logoWhiteUrl : logoUrl
+  const { data: templeProfile } = useGetTempleProfileQuery()
+  const { language } = useStaffTranslation()
+
+  if (isMark) {
+    return <TempleGopuramMark className={cn('block h-9 w-9', className)} />
+  }
 
   return (
-    <img
-      src={isMark ? markUrl : fullLogoUrl}
-      alt="DO SYSTEMS"
-      className={cn('block object-contain', isMark ? 'h-9 w-9' : 'h-14 w-auto', className)}
-    />
+    <span className={cn('flex items-center gap-2', className)}>
+      <TempleGopuramMark className="block h-10 w-auto shrink-0" />
+      <span className="truncate text-base font-semibold leading-tight text-[var(--color-text-strong)]">
+        {resolveTempleName(templeProfile, language, 'Temple Administration')}
+      </span>
+    </span>
   )
 }

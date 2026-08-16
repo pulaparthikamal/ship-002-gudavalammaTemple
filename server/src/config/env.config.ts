@@ -23,7 +23,6 @@ export const envConfig = {
   mailUser: env.get('MAIL_USER').required().asString(),
   mailPass: env.get('MAIL_PASS').required().asString(),
   mailFrom: env.get('MAIL_FROM').required().asString(),
-  socialApprovalEmail: env.get('SOCIAL_APPROVAL_EMAIL').required().asString(),
 
   defaultPage: env.get('DEFAULT_PAGE').default(1).asIntPositive(),
   defaultLimit: env.get('DEFAULT_LIMIT').default(10).asIntPositive(),
@@ -31,180 +30,30 @@ export const envConfig = {
   rateLimitEnabled: env.get('RATE_LIMIT_ENABLED').default('true').asBoolStrict(),
   rateLimitWindowMs: env.get('RATE_LIMIT_WINDOW_MS').default(900000000).asIntPositive(),
   rateLimitMax: env.get('RATE_LIMIT_MAX').default(100000000).asIntPositive(),
-  crewaiApiUrl: env.get('CREWAI_API_URL').default('http://localhost:8007/api/v1').asString(),
-  lightweightMonitoringEnabled: env.get('LIGHTWEIGHT_MONITORING_ENABLED').default('true').asBoolStrict(),
-  lightweightMonitoringCoreOnly: env.get('LIGHTWEIGHT_MONITORING_CORE_ONLY').default('false').asBoolStrict(),
-  lightweightMonitoringEnableProcessScan: env.get('LIGHTWEIGHT_MONITORING_ENABLE_PROCESS_SCAN').default('true').asBoolStrict(),
-  lightweightMonitoringEnableServiceScan: env.get('LIGHTWEIGHT_MONITORING_ENABLE_SERVICE_SCAN').default('true').asBoolStrict(),
-  lightweightMonitoringEnableAuthScan: env.get('LIGHTWEIGHT_MONITORING_ENABLE_AUTH_SCAN').default('false').asBoolStrict(),
-  lightweightMonitoringEnableNetworkScan: env.get('LIGHTWEIGHT_MONITORING_ENABLE_NETWORK_SCAN').default('false').asBoolStrict(),
-  lightweightMonitoringBaseIntervalMs: process.env.METRICS_COLLECTION_INTERVAL_SECONDS
-    ? env.get('METRICS_COLLECTION_INTERVAL_SECONDS').required().asIntPositive() * 1000
-    : env.get('LIGHTWEIGHT_MONITORING_BASE_INTERVAL_MS').default(60000).asIntPositive(),
-  lightweightMonitoringMinIntervalMs: env.get('LIGHTWEIGHT_MONITORING_MIN_INTERVAL_MS').default(5000).asIntPositive(),
-  lightweightMonitoringMaxIntervalMs: env.get('LIGHTWEIGHT_MONITORING_MAX_INTERVAL_MS').default(300000).asIntPositive(),
-  lightweightMonitoringSchedulerTickMs: env.get('LIGHTWEIGHT_MONITORING_SCHEDULER_TICK_MS').default(5000).asIntPositive(),
-  lightweightMonitoringMaxConcurrency: env.get('METRICS_COLLECTION_CONCURRENCY').default(3).asIntPositive(),
-  lightweightMonitoringDiskIntervalMs: env.get('LIGHTWEIGHT_MONITORING_DISK_INTERVAL_MS').default(300000).asIntPositive(),
-  lightweightMonitoringProcessIntervalMs: env.get('LIGHTWEIGHT_MONITORING_PROCESS_INTERVAL_MS').default(10000).asIntPositive(),
-  lightweightMonitoringServiceIntervalMs: env.get('LIGHTWEIGHT_MONITORING_SERVICE_INTERVAL_MS').default(5000).asIntPositive(),
-  lightweightMonitoringSshIntervalMs: env.get('LIGHTWEIGHT_MONITORING_SSH_INTERVAL_MS').default(600000).asIntPositive(),
-  lightweightMonitoringNetworkScanIntervalMs: env.get('LIGHTWEIGHT_MONITORING_NETWORK_SCAN_INTERVAL_MS').default(600000).asIntPositive(),
-  lightweightMonitoringCommandTimeoutMs: env.get('LIGHTWEIGHT_MONITORING_COMMAND_TIMEOUT_MS').default(3000).asIntPositive(),
-  lightweightMonitoringManualMinIntervalMs: env.get('LIGHTWEIGHT_MONITORING_MANUAL_MIN_INTERVAL_MS').default(5000).asIntPositive(),
-  crewaiIncidentAnalysisEnabled: env.get('CREWAI_INCIDENT_ANALYSIS_ENABLED').default('false').asBoolStrict(),
-  fileScannerEnabled: env.get('FILE_SCANNER_ENABLED').default('false').asBoolStrict(),
-  fileScannerMode: env.get('FILE_SCANNER_MODE').default('server_wide').asString(),
-  fileScannerServerIds: env.get('FILE_SCANNER_SERVER_IDS').default('').asArray(',').map((value) => value.trim()).filter(Boolean),
-  fileScannerWatchRoots: env.get('FILE_SCANNER_WATCH_ROOTS').default('/root,/home,/var/www,/opt,/srv,/etc,/tmp,/usr/local/bin,/var/spool/cron,/etc/cron.d,/etc/systemd/system').asArray(',').map((value) => value.trim()).filter(Boolean),
-  fileScannerExcludePaths: env.get('FILE_SCANNER_EXCLUDE_PATHS').default('/proc,/sys,/dev,/run,/boot,/var/lib/docker,/var/lib/containerd,/var/log,/var/cache,/tmp/systemd-private,/tmp/node-compile-cache,node_modules,.git,.nvm,.npm,cache,logs,backups,quarantine,uploads/cache').asArray(',').map((value) => value.trim()).filter(Boolean),
-  fileScannerMaxFileSizeMb: env.get('FILE_SCANNER_MAX_FILE_SIZE_MB').default(5).asIntPositive(),
-  fileScannerLargeFileThreatMb: env.get('FILE_SCANNER_LARGE_FILE_THREAT_MB').default(1024).asIntPositive(),
-  fileScannerCompressBackup: env.get('FILE_SCANNER_COMPRESS_BACKUP').default('true').asBoolStrict(),
-  fileScannerQuarantinePath: env.get('FILE_SCANNER_QUARANTINE_PATH').default('/var/quarantine/server-agent').asString(),
-  fileScannerBackupPath: env.get('FILE_SCANNER_BACKUP_PATH').default('/var/backups/server-agent/file-scanner').asString(),
-  fileScannerActionOnHarmful: env.get('FILE_SCANNER_ACTION_ON_HARMFUL').default('quarantine').asString(),
-  fileScannerDeleteAfterBackup: env.get('FILE_SCANNER_DELETE_AFTER_BACKUP').default('false').asBoolStrict(),
-  fileScannerPollIntervalMs: env.get('FILE_SCANNER_POLL_INTERVAL_MS').default(5000).asIntPositive(),
-  fileScannerDebounceMs: env.get('FILE_SCANNER_DEBOUNCE_MS').default(3000).asIntPositive(),
-  fileScannerMaxConcurrentScans: env.get('FILE_SCANNER_MAX_CONCURRENT_SCANS').default(3).asIntPositive(),
-  fileScannerMaxFilesPerSweep: env.get('FILE_SCANNER_MAX_FILES_PER_SWEEP').default(500).asIntPositive(),
-  fileScannerSshCooldownMs: env.get('FILE_SCANNER_SSH_COOLDOWN_MS').default(30000).asIntPositive(),
-  fileScannerCommandTimeoutMs: env.get('FILE_SCANNER_COMMAND_TIMEOUT_MS').default(15000).asIntPositive(),
-  fileScannerAiExplanationEnabled: env.get('FILE_SCANNER_AI_EXPLANATION_ENABLED').default('false').asBoolStrict(),
+
   uploadRootDir: env.get('UPLOAD_ROOT_DIR').default('uploads').asString(),
   uploadMaxFileSizeMb: env.get('UPLOAD_MAX_FILE_SIZE_MB').default(50).asIntPositive(),
-  openaiApiKey: env.get('CREWAI_CONTENT_OPENAI_API_KEY').asString(),
-
-  fbAppId: env.get('FB_APP_ID').asString(),
-  fbAppSecret: env.get('FB_APP_SECRET').asString(),
-  fbRedirectUri: env.get('FB_REDIRECT_URI').asString(),
-
-  linkedInClientId: env.get('LINKEDIN_CLIENT_ID').asString(),
-  linkedInClientSecret: env.get('LINKEDIN_CLIENT_SECRET').asString(),
-  linkedInRedirectUri: env.get('LINKEDIN_REDIRECT_URI').asString(),
 
   frontendUrl: env.get('FRONTEND_URL').default('http://localhost:5173').asString(),
 
-  instagramAppId: env.get('INSTAGRAM_APP_ID').asString(),
-  instagramAppSecret: env.get('INSTAGRAM_APP_SECRET').asString(),
-  instagramRedirectUri: env.get('INSTAGRAM_REDIRECT_URI').asString(),
-  googleClientId: env.get('GOOGLE_CLIENT_ID').asString(),
-  googleClientSecret: env.get('GOOGLE_CLIENT_SECRET').asString(),
-  googleRedirectUri: env.get('GOOGLE_REDIRECT_URI').asString(),
-  publicApiBaseUrl: env.get('PUBLIC_API_BASE_URL').default('http://localhost:5003').asString(),
-
-  eligibilityVendorEnabled: env.get('ELIGIBILITY_VENDOR_ENABLED').default('false').asBoolStrict(),
-  eligibilityVendorName: env.get('ELIGIBILITY_VENDOR_NAME').default('stedi').asString(),
-  eligibilityAuthUrl: env.get('ELIGIBILITY_AUTH_URL').default('').asString(),
-  eligibilityAudience: env.get('ELIGIBILITY_AUDIENCE').default('').asString(),
-  eligibilityClientId: env.get('ELIGIBILITY_CLIENT_ID').default('').asString(),
-  eligibilityClientSecret: env.get('ELIGIBILITY_CLIENT_SECRET').default('').asString(),
-  eligibilityGrantType: env.get('ELIGIBILITY_GRANT_TYPE').default('client_credentials').asString(),
-  eligibilityVerificationUrl: env.get('ELIGIBILITY_VERIFICATION_URL').default('').asString(),
-  eligibilityRequestTimeoutMs: env.get('ELIGIBILITY_REQUEST_TIMEOUT_MS').default(30000).asIntPositive(),
-  eligibilityDefaultServiceTypeCode: env.get('ELIGIBILITY_DEFAULT_SERVICE_TYPE_CODE').default('30').asString(),
-  eligibilityPayloadVersion: env.get('ELIGIBILITY_PAYLOAD_VERSION').default('1.0.0').asString(),
-  eligibilityDefaultPriority: env.get('ELIGIBILITY_DEFAULT_PRIORITY').default('Normal').asString(),
-  eligibilityPayerIdentifierSource: env.get('ELIGIBILITY_PAYER_IDENTIFIER_SOURCE').default('auto').asString(),
-  eligibilityDefaultProcedureCodes: env
-    .get('ELIGIBILITY_DEFAULT_PROCEDURE_CODES')
-    .default('')
-    .asArray(',')
-    .map((value) => value.trim())
-    .filter(Boolean),
-  eligibilityDefaultCategories: env
-    .get('ELIGIBILITY_DEFAULT_CATEGORIES')
-    .default('')
-    .asArray(',')
-    .map((value) => value.trim())
-    .filter(Boolean),
-  eligibilityDefaultPlanTypes: env
-    .get('ELIGIBILITY_DEFAULT_PLAN_TYPES')
-    .default('')
-    .asArray(',')
-    .map((value) => value.trim())
-    .filter(Boolean),
-  eligibilityDefaultNetworkStatuses: env
-    .get('ELIGIBILITY_DEFAULT_NETWORK_STATUSES')
-    .default('')
-    .asArray(',')
-    .map((value) => value.trim())
-    .filter(Boolean),
-  eligibilityReverificationDays: env.get('ELIGIBILITY_REVERIFICATION_DAYS').default(30).asIntPositive(),
-  eligibilityValidDays: env.get('RCM_ELIGIBILITY_VALID_DAYS').default(7).asIntPositive(),
-  eligibilityStoreRawPayloads: env.get('ELIGIBILITY_STORE_RAW_PAYLOADS').default('false').asBoolStrict(),
-  stediEligibilityApiKey: env.get('STEDI_ELIGIBILITY_API_KEY').default('').asString(),
-  stediEligibilityEndpoint: env.get('STEDI_ELIGIBILITY_ENDPOINT').default('https://healthcare.us.stedi.com/2024-04-01/change/medicalnetwork/eligibility/v3').asString(),
-
-  claimSubmissionEnabled: env.get('CLAIM_SUBMISSION_ENABLED').default('false').asBoolStrict(),
-  claimSubmissionVendorName: env.get('CLAIM_SUBMISSION_VENDOR_NAME').default('generic-clearinghouse').asString(),
-  claimSubmissionAuthUrl: env.get('CLAIM_SUBMISSION_AUTH_URL').default('').asString(),
-  claimSubmissionAudience: env.get('CLAIM_SUBMISSION_AUDIENCE').default('').asString(),
-  claimSubmissionClientId: env.get('CLAIM_SUBMISSION_CLIENT_ID').default('').asString(),
-  claimSubmissionClientSecret: env.get('CLAIM_SUBMISSION_CLIENT_SECRET').default('').asString(),
-  claimSubmissionGrantType: env.get('CLAIM_SUBMISSION_GRANT_TYPE').default('client_credentials').asString(),
-  claimSubmissionSubmitUrl: env.get('CLAIM_SUBMISSION_SUBMIT_URL').default('').asString(),
-  claimSubmissionTimeoutMs: env.get('CLAIM_SUBMISSION_TIMEOUT_MS').default(30000).asIntPositive(),
-  claimSubmissionTransportMode: env.get('CLAIM_SUBMISSION_TRANSPORT_MODE').default('json').asString(),
-  claimSubmissionApiKey: env.get('CLAIM_SUBMISSION_API_KEY').default('').asString(),
-  claimSubmissionApiKeyHeader: env.get('CLAIM_SUBMISSION_API_KEY_HEADER').default('x-api-key').asString(),
-  claimSubmissionWebhookSecret: env.get('CLAIM_SUBMISSION_WEBHOOK_SECRET').default('').asString(),
-  claimSubmissionUsageIndicator: env.get('CLAIM_SUBMISSION_USAGE_INDICATOR').default('T').asString(),
-  claimSubmissionSenderId: env.get('CLAIM_SUBMISSION_SENDER_ID').default('RCMSENDER').asString(),
-  claimSubmissionReceiverId: env.get('CLAIM_SUBMISSION_RECEIVER_ID').default('CLEARINGHOUSE').asString(),
-  claimSubmissionSubmitterId: env.get('CLAIM_SUBMISSION_SUBMITTER_ID').default('RCMAPP').asString(),
-  claimSubmissionSubmitterName: env.get('CLAIM_SUBMISSION_SUBMITTER_NAME').default('Realtime RCM').asString(),
-  claimSubmissionReceiverName: env.get('CLAIM_SUBMISSION_RECEIVER_NAME').default('Clearinghouse').asString(),
-  claimSubmissionContactName: env.get('CLAIM_SUBMISSION_CONTACT_NAME').default('RCM Support').asString(),
-  claimSubmissionContactPhone: env.get('CLAIM_SUBMISSION_CONTACT_PHONE').default('').asString(),
-  claimSubmissionMaxRetries: env.get('CLAIM_SUBMISSION_MAX_RETRIES').default(3).asIntPositive(),
-  claimSubmissionStoreRawPayloads: env.get('CLAIM_SUBMISSION_STORE_RAW_PAYLOADS').default('false').asBoolStrict(),
-  stediApiKey: env.get('STEDI_API_KEY').default('').asString(),
-  stediSubmitEndpoint: env.get('STEDI_SUBMIT_ENDPOINT').default('https://healthcare.us.stedi.com/2024-04-01/change/medicalnetwork/professionalclaims/v3/raw-x12-submission').asString(),
-  stediStatusEndpoint: env.get('STEDI_STATUS_ENDPOINT').default('https://core.us.stedi.com/2023-08-01/transactions').asString(),
-  stediTestPayerId: env.get('STEDI_TEST_PAYER_ID').default('').asString(),
-  stediTestBillingNpi: env.get('STEDI_TEST_BILLING_NPI').default('').asString(),
-  stediTestBillingTaxId: env.get('STEDI_TEST_BILLING_TAX_ID').default('').asString(),
-  stediSubmitterId: env.get('STEDI_SUBMITTER_ID').default('').asString(),
-  stediReceiverId: env.get('STEDI_RECEIVER_ID').default('').asString(),
-  rcmStediDebugLogs: env.get('RCM_STEDI_DEBUG_LOGS').default('false').asBoolStrict(),
-  rcmQueueDriver: env.get('RCM_QUEUE_DRIVER').default('mongo').asString(),
-  rcmQueueWorkerEnabled: env.get('RCM_QUEUE_WORKER_ENABLED').default('true').asBoolStrict(),
-  rcmQueueConcurrency: env.get('RCM_QUEUE_WORKER_CONCURRENCY').default(env.get('RCM_QUEUE_CONCURRENCY').default(3).asString()).asIntPositive(),
-  rcmQueueWorkerIntervalMs: env.get('RCM_QUEUE_WORKER_INTERVAL_MS').default(5000).asIntPositive(),
-  rcmQueueMaxAttempts: env.get('RCM_QUEUE_MAX_ATTEMPTS').default(3).asIntPositive(),
-  rcmQueueRetryBaseMs: env.get('RCM_QUEUE_BACKOFF_MS').default(env.get('RCM_QUEUE_RETRY_BASE_MS').default(1000).asString()).asIntPositive(),
-  rcmQueueRetryMaxMs: env.get('RCM_QUEUE_RETRY_MAX_MS').default(60000).asIntPositive(),
-  rcmQueueStaleRunningThresholdMs: env.get('RCM_QUEUE_STALE_RUNNING_THRESHOLD_MS').default(15 * 60 * 1000).asIntPositive(),
-  rcmAwaitingEraThresholdDays: env.get('RCM_AWAITING_ERA_THRESHOLD_DAYS').default(14).asIntPositive(),
-  rcmRealtimeEnabled: env.get('RCM_REALTIME_ENABLED').default('true').asBoolStrict(),
-  rcmRealtimeMode: env.get('RCM_REALTIME_MODE').default('sse').asString(),
-  rcmZapierTimelyFilingEnabled: env.get('RCM_ZAPIER_TIMELY_FILING_ENABLED').default('false').asBoolStrict(),
-  rcmZapierTimelyFilingWebhookUrl: env.get('RCM_ZAPIER_TIMELY_FILING_WEBHOOK_URL').default('').asString(),
-  rcmZapierTimelyFilingTimeoutMs: env.get('RCM_ZAPIER_TIMELY_FILING_TIMEOUT_MS').default(10000).asIntPositive(),
-  rcmZapierTimelyFilingFallbackEmail: env.get('RCM_ZAPIER_TIMELY_FILING_FALLBACK_EMAIL').default('').asString(),
-  rcmZapierDocumentationComplianceEnabled: env.get('RCM_ZAPIER_DOCUMENTATION_COMPLIANCE_ENABLED').default('false').asBoolStrict(),
-  rcmZapierDocumentationComplianceWebhookUrl: env.get('RCM_ZAPIER_DOCUMENTATION_COMPLIANCE_WEBHOOK_URL').default('').asString(),
-  rcmZapierDocumentationComplianceTimeoutMs: env.get('RCM_ZAPIER_DOCUMENTATION_COMPLIANCE_TIMEOUT_MS').default(10000).asIntPositive(),
-  rcmZapierDocumentationComplianceFallbackEmail: env.get('RCM_ZAPIER_DOCUMENTATION_COMPLIANCE_FALLBACK_EMAIL').default('').asString(),
-  rcmTimelyFilingScanEnabled: env.get('RCM_TIMELY_FILING_SCAN_ENABLED').default('true').asBoolStrict(),
-  rcmTimelyFilingScanCron: env.get('RCM_TIMELY_FILING_SCAN_CRON').default('0 1 * * *').asString(),
-  rcmTimelyFilingScanTimezone: env.get('RCM_TIMELY_FILING_SCAN_TIMEZONE').default('Asia/Kolkata').asString(),
-  rcmTimelyFilingScanOnStartup: env.get('RCM_TIMELY_FILING_SCAN_ON_STARTUP').default('true').asBoolStrict(),
-  redisUrl: env.get('REDIS_URL').default('').asString(),
-  rcmRedisUrl: env.get('RCM_REDIS_URL').default('').asString(),
-  rcmAllowPhiLogs: env.get('RCM_ALLOW_PHI_LOGS').default('false').asBoolStrict(),
-  rcmRedactDiagnosisCodes: env.get('RCM_REDACT_DIAGNOSIS_CODES').default('false').asBoolStrict(),
-  stediWebhookSecret: env.get('STEDI_WEBHOOK_SECRET').default('').asString(),
-  stediWebhookSignatureHeader: env.get('STEDI_WEBHOOK_SIGNATURE_HEADER').default('x-stedi-signature').asString(),
-  stediWebhookTimestampHeader: env.get('STEDI_WEBHOOK_TIMESTAMP_HEADER').default('x-stedi-timestamp').asString(),
-  stediWebhookToleranceSeconds: env.get('STEDI_WEBHOOK_TOLERANCE_SECONDS').default(300).asIntPositive(),
-  eraStoreRawPayloads: env.get('ERA_STORE_RAW_PAYLOADS').default('false').asBoolStrict(),
-  collectionsDaysOverdueThreshold: env.get('COLLECTIONS_DAYS_OVERDUE_THRESHOLD').default(90).asIntPositive(),
-  collectionsMinimumBalance: env.get('COLLECTIONS_MINIMUM_BALANCE').default(25).asFloatPositive(),
-  collectionsMaxContactAttempts: env.get('COLLECTIONS_MAX_CONTACT_ATTEMPTS').default(3).asIntPositive(),
-  collectionsEscalationIntervalDays: env.get('COLLECTIONS_ESCALATION_INTERVAL_DAYS').default(14).asIntPositive(),
-  collectionsWriteOffThreshold: env.get('COLLECTIONS_WRITE_OFF_THRESHOLD').default(10).asFloatPositive(),
-  collectionsSettlementAllowed: env.get('COLLECTIONS_SETTLEMENT_ALLOWED').default('false').asBoolStrict(),
+  // WhatsApp booking/donation confirmations via Meta's WhatsApp Cloud API
+  // directly (no Twilio markup) — see services/notification/whatsapp.service.ts.
+  // Optional: left blank, the service just logs and skips sending, the same
+  // "never fail the booking" fire-and-forget behavior as the email path.
+  whatsappPhoneNumberId: env.get('WHATSAPP_PHONE_NUMBER_ID').default('').asString(),
+  whatsappAccessToken: env.get('WHATSAPP_ACCESS_TOKEN').default('').asString(),
+  whatsappApiVersion: env.get('WHATSAPP_API_VERSION').default('v21.0').asString(),
+  // Meta requires an approved message template for business-initiated
+  // messages (a booking confirmation isn't a reply within a customer-service
+  // window). Defaults to Meta's own zero-parameter quickstart demo template,
+  // "hello_world" — real booking details only reach the devotee once a real
+  // template (with body placeholders) is created and approved in the Meta
+  // Business account and configured here.
+  whatsappTemplateName: env.get('WHATSAPP_TEMPLATE_NAME').default('hello_world').asString(),
+  whatsappTemplateLanguage: env.get('WHATSAPP_TEMPLATE_LANGUAGE').default('en_US').asString(),
+  // Separate template for OTP login codes — Meta requires OTPs to use its
+  // dedicated "Authentication" template category, a different approval track
+  // from a general confirmation template. Same hello_world fallback/caveat.
+  whatsappOtpTemplateName: env.get('WHATSAPP_OTP_TEMPLATE_NAME').default('hello_world').asString(),
+  whatsappOtpTemplateLanguage: env.get('WHATSAPP_OTP_TEMPLATE_LANGUAGE').default('en_US').asString(),
 };

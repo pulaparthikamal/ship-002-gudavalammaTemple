@@ -3,17 +3,27 @@ import { authController } from './auth.controller';
 import { validate } from '../../middlewares/validate.middleware';
 import { asyncHandler } from '../../utils/asyncHandler.util';
 import { authMiddleware } from '../../middlewares/auth.middleware';
+import { otpRequestRateLimiter } from '../../middlewares/otpRateLimiter.middleware';
 import {
   registerSchema,
   loginSchema,
   refreshTokenSchema,
   changePasswordSchema,
+  requestOtpSchema,
+  verifyOtpSchema,
 } from './auth.schema';
 
 const router = Router();
 
 router.post('/register', validate(registerSchema), asyncHandler(authController.register));
 router.post('/login', validate(loginSchema), asyncHandler(authController.login));
+router.post(
+  '/otp/request',
+  otpRequestRateLimiter,
+  validate(requestOtpSchema),
+  asyncHandler(authController.requestOtp)
+);
+router.post('/otp/verify', validate(verifyOtpSchema), asyncHandler(authController.verifyOtp));
 router.post('/refresh-token', validate(refreshTokenSchema), asyncHandler(authController.refreshToken));
 
 // Protected routes

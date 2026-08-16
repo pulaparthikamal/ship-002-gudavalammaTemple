@@ -7,6 +7,7 @@ import {
   isAuthSnapshotExpired,
   notifyAuthHttpError,
 } from './authSessionBridge'
+import { getLocaleSnapshot, resolveAudienceFromPath } from './localeSessionBridge'
 import type { ApiError } from '@/types/api'
 
 export const apiClient = axios.create({
@@ -46,6 +47,19 @@ function attachAuthorizationHeader(config: InternalAxiosRequestConfig) {
   return config
 }
 
+function attachLocaleHeader(config: InternalAxiosRequestConfig) {
+  const audience = resolveAudienceFromPath(typeof window !== 'undefined' ? window.location.pathname : '/')
+  const snapshot = getLocaleSnapshot()
+  const locale = audience === 'staff' ? snapshot.staffLocale : snapshot.devoteeLocale
+
+  const headers = AxiosHeaders.from(config.headers)
+  headers.set('Accept-Language', locale)
+  config.headers = headers
+
+  return config
+}
+
+apiClient.interceptors.request.use(attachLocaleHeader)
 apiClient.interceptors.request.use(attachAuthorizationHeader)
 
 apiClient.interceptors.response.use(

@@ -4,6 +4,7 @@ import { HTTP_STATUS } from '../../constants/httpStatus.constants';
 import { t } from '../../i18n';
 import { PaginationQuery, PaginationMeta } from '../../types/pagination.types';
 import { Role } from '../role/role.model';
+import { translationService } from '../../services/translation/translation.service';
 
 export const menuService = {
   async create(data: any, locale: string) {
@@ -39,24 +40,35 @@ export const menuService = {
     return Menu.find({ active: true }).sort({ sequenceNo: 1 }).lean();
   },
 
-  async getMyMenu(role: any) {
+  async getMyMenu(role: any, locale: string = 'en') {
     const menus = await Menu.find({ active: true }).sort({ sequenceNo: 1 }).lean();
-    
+
     // Filter menus based on permissions
-    return menus.filter((menu: any) => {
+    const filtered = menus.filter((menu: any) => {
       // Check main menu permission
       const hasViewPermission = this._checkPermission(role, menu.permissionKey);
       if (!hasViewPermission) return false;
 
       // Filter submenus if any
       if (menu.submenu && menu.submenu.length > 0) {
-        menu.submenu = menu.submenu.filter((sub: any) => 
+        menu.submenu = menu.submenu.filter((sub: any) =>
           this._checkPermission(role, sub.permissionKey)
         );
       }
 
       return true;
     });
+
+    if (locale === 'en') return filtered;
+
+    for (const menu of filtered as any[]) {
+      menu.title = await translationService.translateText(menu.title, 'en', locale);
+      for (const sub of menu.submenu ?? []) {
+        sub.title = await translationService.translateText(sub.title, 'en', locale);
+      }
+    }
+
+    return filtered;
   },
 
   _checkPermission(role: any, permissionKey: string): boolean {

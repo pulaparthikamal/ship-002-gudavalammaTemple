@@ -11,7 +11,7 @@ import { FormInputText } from '@/components/forms/FormInputText'
 import { FormPassword } from '@/components/forms/FormPassword'
 import { clearAuthError, selectAuthError, setCredentials } from '@/features/auth/authSlice'
 import { useLoginMutation } from '@/features/auth/services/authApi'
-import { useLoginLanguage } from '@/features/auth/i18n/useLoginLanguage'
+import { useStaffTranslation } from '@/i18n/useTranslation'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { useToast } from '@/hooks/useToast'
 import type { LoginFormValues } from '@/schemas/authSchema'
@@ -110,12 +110,12 @@ export function LoginForm() {
   const location = useLocation()
   const authError = useAppSelector(selectAuthError)
   const [login, { error, isLoading }] = useLoginMutation()
-  const { t } = useLoginLanguage()
+  const { t } = useStaffTranslation()
   const localizedLoginSchema = useMemo(
     () =>
       z.object({
-        email: z.string().trim().email(t('errorInvalidEmail')),
-        password: z.string().min(8, t('errorPasswordMin')),
+        email: z.string().trim().email(t('login.errorInvalidEmail')),
+        password: z.string().min(8, t('login.errorPasswordMin')),
         rememberMe: z.boolean(),
       }),
     [t],
@@ -144,14 +144,14 @@ export function LoginForm() {
       dispatch(setCredentials(toAuthSession(response, 'staff')))
       showToast({
         severity: 'success',
-        summary: response.respMessage ?? t('loginSuccessTitle'),
-        detail: t('loginSuccessDetail'),
+        summary: response.respMessage ?? t('login.loginSuccessTitle'),
+        detail: t('login.loginSuccessDetail'),
       })
       navigate(redirectTo, { replace: true })
     } catch (submitError) {
       showToast({
         severity: 'error',
-        summary: t('loginFailedTitle'),
+        summary: t('login.loginFailedTitle'),
         detail: getApiErrorMessage(submitError),
       })
     }
@@ -164,15 +164,15 @@ export function LoginForm() {
       <FormInputText
         control={control}
         name="email"
-        label={t('emailLabel')}
-        placeholder={t('emailPlaceholder')}
+        label={t('login.emailLabel')}
+        placeholder={t('login.emailPlaceholder')}
         autoComplete="email"
       />
       <FormPassword
         control={control}
         name="password"
-        label={t('passwordLabel')}
-        placeholder={t('passwordPlaceholder')}
+        label={t('login.passwordLabel')}
+        placeholder={t('login.passwordPlaceholder')}
         autoComplete="current-password"
       />
 
@@ -180,17 +180,17 @@ export function LoginForm() {
         <FormCheckbox
           control={control}
           name="rememberMe"
-          label={t('rememberMe')}
+          label={t('login.rememberMe')}
           compact
         />
         <Link to="/forgot-password" className="text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-hover)]">
-          {t('forgotPassword')}
+          {t('login.forgotPassword')}
         </Link>
       </div>
 
       <Button
         type="submit"
-        label={isLoading || isSubmitting ? t('signingIn') : t('signIn')}
+        label={isLoading || isSubmitting ? t('login.signingIn') : t('login.signIn')}
         icon="pi pi-arrow-right"
         iconPos="right"
         loading={isLoading || isSubmitting}

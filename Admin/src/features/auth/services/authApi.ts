@@ -6,6 +6,9 @@ import type {
   LoginRequest,
   LoginResponse,
   RegisterRequest,
+  RequestOtpRequest,
+  RequestOtpResponse,
+  VerifyOtpRequest,
 } from '@/types/auth'
 
 export const authApi = apiSlice.injectEndpoints({
@@ -14,10 +17,28 @@ export const authApi = apiSlice.injectEndpoints({
       query: (credentials) => ({
         url: '/auth/login',
         method: 'POST',
-        data: {
-          email: credentials.email,
-          password: credentials.password,
-        },
+        data: credentials.phone
+          ? { phone: credentials.phone, password: credentials.password }
+          : { email: credentials.email, password: credentials.password },
+        secured: false,
+        skipGlobalErrorHandler: true,
+      }),
+      invalidatesTags: ['Auth'],
+    }),
+    requestOtp: builder.mutation<RequestOtpResponse, RequestOtpRequest>({
+      query: (payload) => ({
+        url: '/auth/otp/request',
+        method: 'POST',
+        data: payload,
+        secured: false,
+        skipGlobalErrorHandler: true,
+      }),
+    }),
+    verifyOtp: builder.mutation<LoginResponse, VerifyOtpRequest>({
+      query: (payload) => ({
+        url: '/auth/otp/verify',
+        method: 'POST',
+        data: payload,
         secured: false,
         skipGlobalErrorHandler: true,
       }),
@@ -69,4 +90,6 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useRefreshTokenMutation,
+  useRequestOtpMutation,
+  useVerifyOtpMutation,
 } = authApi

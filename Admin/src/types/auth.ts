@@ -37,8 +37,29 @@ export interface AuthState {
 }
 
 export interface LoginRequest {
-  email: string
+  email?: string
+  phone?: string
   password: string
+}
+
+export interface RequestOtpRequest {
+  phone: string
+}
+
+export interface RequestOtpResponse {
+  success?: boolean
+  statusCode?: number
+  respMessage?: string
+  data?: {
+    phone: string
+    expiresInSeconds: number
+    deliveredVia: { email: boolean; whatsapp: boolean }
+  }
+}
+
+export interface VerifyOtpRequest {
+  phone: string
+  otp: string
 }
 
 export interface RegisterRequest {

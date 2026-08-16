@@ -108,6 +108,45 @@ export const userService = {
     return true;
   },
 
+  async updateOwnLocale(id: string, preferredLocale: 'en' | 'te' | 'hi', locale: string) {
+    const user = await User.findOneAndUpdate(
+      { _id: id, isDeleted: false },
+      { preferredLocale, updated: new Date() },
+      { new: true }
+    );
+
+    if (!user) {
+      throw new AppError(t('user.notFound', {}, locale), HTTP_STATUS.NOT_FOUND);
+    }
+
+    return user;
+  },
+
+  async updateOwnProfile(
+    id: string,
+    data: { firstName?: string; lastName?: string; email?: string; phone?: string },
+    locale: string
+  ) {
+    if (data.email) {
+      const existingUser = await User.findOne({ email: data.email, _id: { $ne: id } });
+      if (existingUser) {
+        throw new AppError(t('user.emailExists', {}, locale), HTTP_STATUS.CONFLICT);
+      }
+    }
+
+    const user = await User.findOneAndUpdate(
+      { _id: id, isDeleted: false },
+      { ...data, updated: new Date() },
+      { new: true }
+    ).populate('role');
+
+    if (!user) {
+      throw new AppError(t('user.notFound', {}, locale), HTTP_STATUS.NOT_FOUND);
+    }
+
+    return user;
+  },
+
   async toggleStatus(id: string, active: boolean, locale: string, updatedBy: string) {
     const user = await User.findOneAndUpdate(
       { _id: id, isDeleted: false },

@@ -1,24 +1,27 @@
 import { useState } from 'react'
-import { useDevoteeLanguage } from '@/features/devotee/i18n/useDevoteeLanguage'
+import { useDevoteeTranslation } from '@/i18n/useTranslation'
+import { ScreenRenderer } from '@/components/screenBuilder/ScreenRenderer'
 
 type Camera = 'garbhagriha' | 'queue' | 'tower'
 
 export function DevoteeLivePage() {
-  const { t } = useDevoteeLanguage()
+  const { t } = useDevoteeTranslation()
   const [camera, setCamera] = useState<Camera>('garbhagriha')
 
-  const cameras: { id: Camera; labelKey: 'camGarbhagriha' | 'camQueue' | 'camTower' }[] = [
-    { id: 'garbhagriha', labelKey: 'camGarbhagriha' },
-    { id: 'queue', labelKey: 'camQueue' },
-    { id: 'tower', labelKey: 'camTower' },
+  const cameras: { id: Camera; labelKey: 'devotee.camGarbhagriha' | 'devotee.camQueue' | 'devotee.camTower' }[] = [
+    { id: 'garbhagriha', labelKey: 'devotee.camGarbhagriha' },
+    { id: 'queue', labelKey: 'devotee.camQueue' },
+    { id: 'tower', labelKey: 'devotee.camTower' },
   ]
 
   return (
     <div className="dp-page">
       <div className="dp-page-head">
-        <h1>{t('liveTitle')}</h1>
-        <p>{t('liveSubtitle')}</p>
+        <h1>{t('devotee.liveTitle')}</h1>
+        <p>{t('devotee.liveSubtitle')}</p>
       </div>
+
+      <ScreenRenderer screenKey="live" />
 
       <div className="dp-live-wrap" style={{ marginTop: 20 }}>
         <div>
@@ -26,7 +29,7 @@ export function DevoteeLivePage() {
             <div className="dp-live-screen">
               <span className="dp-live-badge">
                 <span className="dp-dot-live" />
-                {t('liveBadge')}
+                {t('devotee.liveBadge')}
               </span>
               <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#f1d081" strokeWidth="1.2" opacity=".9">
                 <circle cx="12" cy="12" r="10" />
@@ -41,21 +44,21 @@ export function DevoteeLivePage() {
               </div>
             </div>
           </div>
-          <p style={{ marginTop: 16, fontSize: 12, color: 'var(--dp-ink-soft)' }}>{t('liveNote')}</p>
+          <p style={{ marginTop: 16, fontSize: 12, color: 'var(--dp-ink-soft)' }}>{t('devotee.liveNote')}</p>
         </div>
 
         <div className="dp-panel">
-          <div className="dp-stat-label">{t('queueStatusTitle')}</div>
+          <div className="dp-stat-label">{t('devotee.queueStatusTitle')}</div>
           <div className="dp-sched-item">
-            <span>{t('sarvaLine')}</span>
+            <span>{t('devotee.sarvaLine')}</span>
             <span>~45 min</span>
           </div>
           <div className="dp-sched-item">
-            <span>{t('specialLine')}</span>
+            <span>{t('devotee.specialLine')}</span>
             <span>~20 min</span>
           </div>
           <div className="dp-sched-item">
-            <span>{t('seniorLine')}</span>
+            <span>{t('devotee.seniorLine')}</span>
             <span>~10 min</span>
           </div>
         </div>

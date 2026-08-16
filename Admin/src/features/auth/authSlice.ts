@@ -49,10 +49,13 @@ const authSlice = createSlice({
       state.accessToken = action.payload.accessToken
       state.expiresAt = action.payload.expiresAt
     },
-    updateProfile: (state, action: PayloadAction<Pick<AuthUser, 'name' | 'email'>>) => {
+    updateProfile: (state, action: PayloadAction<Pick<AuthUser, 'name' | 'email'> & { phone?: string }>) => {
       if (state.user) {
         state.user.name = action.payload.name
         state.user.email = action.payload.email
+      }
+      if (state.loginData && action.payload.phone !== undefined) {
+        state.loginData.phone = action.payload.phone
       }
     },
     clearAuthError: (state) => {

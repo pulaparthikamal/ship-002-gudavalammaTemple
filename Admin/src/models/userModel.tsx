@@ -8,6 +8,8 @@ import type {
   UserUpdatePayload,
 } from '@/types/user'
 
+type TFn = (key: string, params?: Record<string, string | number>) => string
+
 const defaultUserRoleId = ''
 
 export const userApiDetails = {
@@ -17,15 +19,19 @@ export const userApiDetails = {
   responseTotalPath: 'meta.total',
 } as const
 
-export const userActiveOptions = [
-  { label: 'Active', value: true },
-  { label: 'Inactive', value: false },
-]
+export function getUserActiveOptions(t: TFn): CrudSelectOption[] {
+  return [
+    { label: t('Active'), value: true },
+    { label: t('Inactive'), value: false },
+  ]
+}
 
-export const userEmailVerifiedOptions = [
-  { label: 'Verified', value: true },
-  { label: 'Unverified', value: false },
-]
+export function getUserEmailVerifiedOptions(t: TFn): CrudSelectOption[] {
+  return [
+    { label: t('Verified'), value: true },
+    { label: t('Unverified'), value: false },
+  ]
+}
 
 export function getUserRoleId(role: UserRoleReference) {
   return typeof role === 'string' ? role : role._id
@@ -122,6 +128,7 @@ interface UserRoleFieldState {
 }
 
 export function createUserFormConfig(
+  t: TFn,
   roleOptions: CrudSelectOption[],
   roleFieldState?: UserRoleFieldState,
 ): CrudFormConfig<UserFormValues> {
@@ -132,67 +139,67 @@ export function createUserFormConfig(
     fields: [
       {
         name: '_id',
-        label: 'ID',
+        label: t('ID'),
         type: 'hidden',
       },
       {
         name: 'firstName',
-        label: 'First name',
+        label: t('First name'),
         type: 'text',
-        placeholder: 'First name',
+        placeholder: t('First name'),
       },
       {
         name: 'lastName',
-        label: 'Last name',
+        label: t('Last name'),
         type: 'text',
-        placeholder: 'Last name',
+        placeholder: t('Last name'),
       },
       {
         name: 'email',
-        label: 'Email',
+        label: t('Email'),
         type: 'email',
         placeholder: 'user@example.com',
       },
       {
         name: 'password',
-        label: 'Password',
+        label: t('Password'),
         type: 'password',
-        placeholder: 'Enter password',
-        helperText: 'Required for new users. Leave blank while editing to keep the current password.',
+        placeholder: t('Enter password'),
+        helperText: t('Required for new users. Leave blank while editing to keep the current password.'),
       },
       {
         name: 'phone',
-        label: 'Phone',
+        label: t('Phone'),
         type: 'text',
         placeholder: '+1234567890',
       },
       {
         name: 'role',
-        label: 'Role',
+        label: t('Role'),
         type: 'select',
-        placeholder: 'Choose role',
+        placeholder: t('Choose role'),
         options: roleOptions,
         disabled: roleFieldState?.disabled,
         helperText: roleFieldState?.helperText,
       },
       {
         name: 'profileImage',
-        label: 'Profile image',
+        label: t('Profile image'),
         type: 'text',
         placeholder: 'https://example.com/avatar.png',
         fullWidth: true,
       },
       {
         name: 'isActive',
-        label: 'Active user',
+        label: t('Active user'),
         type: 'switch',
-        helperText: 'Disable this when the user should not be allowed to sign in.',
+        helperText: t('Disable this when the user should not be allowed to sign in.'),
       },
       {
         name: 'isEmailVerified',
-        label: 'Email verified',
+        label: t('Email verified'),
         type: 'switch',
-        helperText: 'Enable after the user email address has been verified.',
+        helperText: t('Enable after the user email address has been verified.'),
       },
     ],
   }
@@ -229,17 +236,20 @@ function renderBooleanBadge(value: boolean, trueLabel: string, falseLabel: strin
   )
 }
 
-export function createUserTableColumns(roleOptions: CrudSelectOption[]): Array<CrudTableColumn<User>> {
+export function createUserTableColumns(t: TFn, roleOptions: CrudSelectOption[]): Array<CrudTableColumn<User>> {
+  const activeOptions = getUserActiveOptions(t)
+  const emailVerifiedOptions = getUserEmailVerifiedOptions(t)
+
   return [
     {
       key: 'user',
-      header: 'User',
+      header: t('User'),
       sortField: 'fullName',
       exportValue: (user) => `${user.firstName} ${user.lastName}`,
       filter: {
         key: 'firstName|lastName|email',
         type: 'regexOr',
-        placeholder: 'Search user',
+        placeholder: t('Search user'),
         matchModes: ['contains', 'notContains', 'startsWith', 'endsWith', 'equals', 'notEquals'],
       },
       render: (user) => (
@@ -267,38 +277,38 @@ export function createUserTableColumns(roleOptions: CrudSelectOption[]): Array<C
     },
     {
       key: 'email',
-      header: 'Email',
+      header: t('Email'),
       field: 'email',
       filter: {
         key: 'email',
         type: 'regexOr',
-        placeholder: 'Search email',
+        placeholder: t('Search email'),
         matchModes: ['contains', 'notContains', 'startsWith', 'endsWith', 'equals', 'notEquals'],
       },
     },
     {
       key: 'phone',
-      header: 'Phone',
+      header: t('Phone'),
       field: 'phone',
       exportValue: (user) => user.phone ?? '',
       filter: {
         key: 'phone',
         type: 'regexOr',
-        placeholder: 'Search phone',
+        placeholder: t('Search phone'),
         matchModes: ['contains', 'notContains', 'startsWith', 'endsWith', 'equals', 'notEquals'],
       },
       render: (user) => user.phone || '-',
     },
     {
       key: 'role',
-      header: 'Role',
+      header: t('Role'),
       sortField: 'role',
       exportValue: (user) => getUserRoleLabel(user.role, roleOptions),
       filter: {
         key: 'role',
         type: 'in',
         input: 'multiSelect',
-        placeholder: 'Role',
+        placeholder: t('Role'),
         options: roleOptions,
         matchModes: ['in', 'notIn'],
       },
@@ -310,44 +320,44 @@ export function createUserTableColumns(roleOptions: CrudSelectOption[]): Array<C
     },
     {
       key: 'isActive',
-      header: 'Active',
+      header: t('Active'),
       sortField: 'isActive',
-      exportValue: (user) => (user.isActive ? 'Active' : 'Inactive'),
+      exportValue: (user) => (user.isActive ? t('Active') : t('Inactive')),
       filter: {
         key: 'isActive',
         type: 'in',
         input: 'multiSelect',
-        placeholder: 'Status',
-        options: userActiveOptions,
+        placeholder: t('Status'),
+        options: activeOptions,
         matchModes: ['in', 'notIn'],
       },
-      render: (user) => renderBooleanBadge(user.isActive, 'Active', 'Inactive'),
+      render: (user) => renderBooleanBadge(user.isActive, t('Active'), t('Inactive')),
     },
     {
       key: 'isEmailVerified',
-      header: 'Verified',
+      header: t('Verified'),
       sortField: 'isEmailVerified',
-      exportValue: (user) => (user.isEmailVerified ? 'Verified' : 'Unverified'),
+      exportValue: (user) => (user.isEmailVerified ? t('Verified') : t('Unverified')),
       filter: {
         key: 'isEmailVerified',
         type: 'in',
         input: 'multiSelect',
-        placeholder: 'Verification',
-        options: userEmailVerifiedOptions,
+        placeholder: t('Verification'),
+        options: emailVerifiedOptions,
         matchModes: ['in', 'notIn'],
       },
-      render: (user) => renderBooleanBadge(user.isEmailVerified, 'Verified', 'Unverified'),
+      render: (user) => renderBooleanBadge(user.isEmailVerified, t('Verified'), t('Unverified')),
     },
     {
       key: 'updatedAt',
-      header: 'Updated',
+      header: t('Updated'),
       sortField: 'updatedAt',
       field: 'updatedAt',
       exportValue: (user) => formatUserDate(user.updatedAt),
       filter: {
         key: 'updatedAt',
         input: 'date',
-        placeholder: 'Updated date',
+        placeholder: t('Updated date'),
       },
       render: (user) => formatUserDate(user.updatedAt),
     },
@@ -402,107 +412,111 @@ export function mapUserFormToUpdatePayload(values: UserFormValues): UserUpdatePa
   return payload
 }
 
-export function renderUserDetails(user: User, roleOptions: CrudSelectOption[] = []) {
-  const fullName = `${user.firstName} ${user.lastName}`
-  const rows = [
-    ['Phone', user.phone || '-'],
-    ['Role', getUserRoleLabel(user.role, roleOptions)],
-    ['Account status', user.isActive ? 'Active' : 'Inactive'],
-    ['Email status', user.isEmailVerified ? 'Verified' : 'Unverified'],
-    ['Created', formatUserDate(user.createdAt)],
-    ['Updated', formatUserDate(user.updatedAt)],
-    ['Deleted', user.isDeleted ? 'Yes' : 'No'],
-  ]
+export function getRenderUserDetails(t: TFn, roleOptions: CrudSelectOption[] = []) {
+  return function renderUserDetails(user: User) {
+    const fullName = `${user.firstName} ${user.lastName}`
+    const rows = [
+      [t('Phone'), user.phone || '-'],
+      [t('Role'), getUserRoleLabel(user.role, roleOptions)],
+      [t('Account status'), user.isActive ? t('Active') : t('Inactive')],
+      [t('Email status'), user.isEmailVerified ? t('Verified') : t('Unverified')],
+      [t('Created'), formatUserDate(user.createdAt)],
+      [t('Updated'), formatUserDate(user.updatedAt)],
+      [t('Deleted'), user.isDeleted ? t('staff.crud.yes') : t('staff.crud.no')],
+    ]
 
-  return (
-    <div className="space-y-5">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        {user.profileImage ? (
-          <img
-            src={user.profileImage}
-            alt={fullName}
-            className="h-16 w-16 rounded-lg object-cover"
-          />
-        ) : (
-          <span className="grid h-16 w-16 shrink-0 place-items-center rounded-lg bg-[var(--color-primary-soft)] text-xl font-semibold text-[var(--color-primary)]">
-            {user.firstName.charAt(0)}
-            {user.lastName.charAt(0)}
-          </span>
-        )}
+    return (
+      <div className="space-y-5">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          {user.profileImage ? (
+            <img
+              src={user.profileImage}
+              alt={fullName}
+              className="h-16 w-16 rounded-lg object-cover"
+            />
+          ) : (
+            <span className="grid h-16 w-16 shrink-0 place-items-center rounded-lg bg-[var(--color-primary-soft)] text-xl font-semibold text-[var(--color-primary)]">
+              {user.firstName.charAt(0)}
+              {user.lastName.charAt(0)}
+            </span>
+          )}
 
-        <div className="min-w-0 flex-1">
-          <h3 className="truncate text-lg font-semibold leading-7 text-[var(--color-text-strong)]">{fullName}</h3>
-          <p className="break-all text-sm leading-5 text-[var(--color-text-muted)]">{user.email}</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {renderBooleanBadge(user.isActive, 'Active', 'Inactive')}
-            {renderBooleanBadge(user.isEmailVerified, 'Email verified', 'Email unverified')}
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate text-lg font-semibold leading-7 text-[var(--color-text-strong)]">{fullName}</h3>
+            <p className="break-all text-sm leading-5 text-[var(--color-text-muted)]">{user.email}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {renderBooleanBadge(user.isActive, t('Active'), t('Inactive'))}
+              {renderBooleanBadge(user.isEmailVerified, t('Email verified'), t('Email unverified'))}
+            </div>
           </div>
         </div>
-      </div>
 
-      <dl className="overflow-hidden rounded-lg border border-[var(--color-border)]">
-        {rows.map(([label, value]) => (
-          <div
-            key={label}
-            className="grid gap-1 border-b border-[var(--color-border)] px-4 py-3 last:border-b-0 sm:grid-cols-[10rem_1fr] sm:items-center"
-          >
-            <dt className="text-xs font-semibold uppercase tracking-normal text-[var(--color-text-muted)]">
-              {label}
-            </dt>
-            <dd className="min-w-0 break-words text-sm font-semibold text-[var(--color-text-strong)] sm:text-right">
-              {value}
-            </dd>
-          </div>
-        ))}
-      </dl>
-    </div>
-  )
+        <dl className="overflow-hidden rounded-lg border border-[var(--color-border)]">
+          {rows.map(([label, value]) => (
+            <div
+              key={label}
+              className="grid gap-1 border-b border-[var(--color-border)] px-4 py-3 last:border-b-0 sm:grid-cols-[10rem_1fr] sm:items-center"
+            >
+              <dt className="text-xs font-semibold uppercase tracking-normal text-[var(--color-text-muted)]">
+                {label}
+              </dt>
+              <dd className="min-w-0 break-words text-sm font-semibold text-[var(--color-text-strong)] sm:text-right">
+                {value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    )
+  }
 }
 
-export function renderUserGridItem(user: User, roleOptions: CrudSelectOption[] = []) {
-  const fullName = `${user.firstName} ${user.lastName}`
+export function getRenderUserGridItem(t: TFn, roleOptions: CrudSelectOption[] = []) {
+  return function renderUserGridItem(user: User) {
+    const fullName = `${user.firstName} ${user.lastName}`
 
-  return (
-    <div className="space-y-3">
-      <div className="flex items-start gap-2.5">
-        {user.profileImage ? (
-          <img
-            src={user.profileImage}
-            alt={fullName}
-            className="h-10 w-10 rounded-lg object-cover"
-          />
-        ) : (
-          <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-[var(--color-primary-soft)] text-xs font-semibold text-[var(--color-primary)]">
-            {user.firstName.charAt(0)}
-            {user.lastName.charAt(0)}
-          </span>
-        )}
+    return (
+      <div className="space-y-3">
+        <div className="flex items-start gap-2.5">
+          {user.profileImage ? (
+            <img
+              src={user.profileImage}
+              alt={fullName}
+              className="h-10 w-10 rounded-lg object-cover"
+            />
+          ) : (
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-[var(--color-primary-soft)] text-xs font-semibold text-[var(--color-primary)]">
+              {user.firstName.charAt(0)}
+              {user.lastName.charAt(0)}
+            </span>
+          )}
 
-        <div className="min-w-0 flex-1">
-          <h3 className="truncate text-sm font-semibold text-[var(--color-text-strong)]">{fullName}</h3>
-          <p className="truncate text-xs text-[var(--color-text-muted)]">{user.email}</p>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {renderBooleanBadge(user.isActive, 'Active', 'Inactive')}
-        {renderBooleanBadge(user.isEmailVerified, 'Verified', 'Unverified')}
-      </div>
-
-      <dl className="grid gap-2.5 sm:grid-cols-2">
-        {[
-          ['Phone', user.phone || '-'],
-          ['Role', getUserRoleLabel(user.role, roleOptions)],
-          ['Updated', formatUserDate(user.updatedAt)],
-        ].map(([label, value]) => (
-          <div key={label} className="space-y-1">
-            <dt className="text-[10px] font-semibold uppercase tracking-normal text-[var(--color-text-muted)]">
-              {label}
-            </dt>
-            <dd className="text-[13px] font-medium text-[var(--color-text-strong)]">{value}</dd>
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate text-sm font-semibold text-[var(--color-text-strong)]">{fullName}</h3>
+            <p className="truncate text-xs text-[var(--color-text-muted)]">{user.email}</p>
           </div>
-        ))}
-      </dl>
-    </div>
-  )
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {renderBooleanBadge(user.isActive, t('Active'), t('Inactive'))}
+          {renderBooleanBadge(user.isEmailVerified, t('Verified'), t('Unverified'))}
+        </div>
+
+        <dl className="grid gap-2.5 sm:grid-cols-2">
+          {[
+            [t('Phone'), user.phone || '-'],
+            [t('Role'), getUserRoleLabel(user.role, roleOptions)],
+            [t('Updated'), formatUserDate(user.updatedAt)],
+          ].map(([label, value]) => (
+            <div key={label} className="space-y-1">
+              <dt className="text-[10px] font-semibold uppercase tracking-normal text-[var(--color-text-muted)]">
+                {label}
+              </dt>
+              <dd className="text-[13px] font-medium text-[var(--color-text-strong)]">{value}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+    )
+  }
 }

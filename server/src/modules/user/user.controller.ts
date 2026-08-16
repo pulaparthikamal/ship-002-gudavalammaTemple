@@ -61,6 +61,26 @@ export const userController = {
     return res.json(respUtil.removeSuccessResponse(req));
   },
 
+  async updateOwnLocale(req: Request, res: Response) {
+    const currentUserId = (req as any).user._id;
+    const user = await userService.updateOwnLocale(currentUserId, req.body.preferredLocale, req.locale || 'en');
+
+    req.entityType = 'user';
+    req.user = user;
+
+    return res.json(respUtil.updateSuccessResponse(req));
+  },
+
+  async updateOwnProfile(req: Request, res: Response) {
+    const currentUserId = (req as any).user._id;
+    const user = await userService.updateOwnProfile(currentUserId, req.body, req.locale || 'en');
+
+    req.entityType = 'user';
+    req.user = user;
+
+    return res.json(respUtil.updateSuccessResponse(req));
+  },
+
   async toggleStatus(req: Request, res: Response) {
     const user = await userService.toggleStatus(req.params.id, req.body.active, req.locale || 'en', (req as any).user._id);
     

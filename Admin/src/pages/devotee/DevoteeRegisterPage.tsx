@@ -1,35 +1,21 @@
 import { Link } from 'react-router-dom'
 import { DevoteeArtwork } from '@/features/devotee/components/DevoteeArtwork'
 import { DevoteeRegisterForm } from '@/features/devotee/components/DevoteeRegisterForm'
-import { DEVOTEE_LANGUAGES } from '@/features/devotee/i18n/devoteeTranslations'
-import { useDevoteeLanguage } from '@/features/devotee/i18n/useDevoteeLanguage'
+import { useDevoteeTranslation } from '@/i18n/useTranslation'
+import { useGetTempleProfileQuery } from '@/services/api/endpoints/templeProfileApi'
+import { resolveTempleName } from '@/utils/templeName'
 import '@/features/devotee/styles/devoteePortal.css'
 
+// Rendered inside DevoteeLayout (see DevoteeRoutes.tsx) — the shared
+// dp-header/dp-footer/language-strip already come from there, so this page
+// only contributes the actual auth-hero content, not a full standalone shell.
 export function DevoteeRegisterPage() {
-  const { t, language, setLanguage } = useDevoteeLanguage()
+  const { t, language } = useDevoteeTranslation()
+  const { data: templeProfile } = useGetTempleProfileQuery()
 
   return (
-    <div className="devotee-portal">
-      <div className="dp-lang-strip">
-        <span className="dp-lang-icon" aria-hidden="true">
-          🕉️
-        </span>
-        {DEVOTEE_LANGUAGES.map((option, index) => (
-          <span key={option.code} style={{ display: 'flex', alignItems: 'center' }}>
-            {index > 0 ? <span className="dp-sep">|</span> : null}
-            <button
-              type="button"
-              className={language === option.code ? 'active' : ''}
-              onClick={() => setLanguage(option.code)}
-            >
-              {option.label}
-            </button>
-          </span>
-        ))}
-      </div>
-
-      <div className="dp-auth-hero">
-        <DevoteeArtwork />
+    <div className="dp-auth-hero">
+      <DevoteeArtwork />
 
         <div>
           <div className="dp-auth-brand-row">
@@ -40,7 +26,7 @@ export function DevoteeRegisterPage() {
             </svg>
             <div>
               <div style={{ fontFamily: 'var(--dp-font-brand)', fontSize: 21, color: 'var(--dp-maroon)', lineHeight: 1 }}>
-                {t('appName')}
+                {resolveTempleName(templeProfile, language, t('devotee.appName'))}
               </div>
               <div
                 style={{
@@ -52,18 +38,18 @@ export function DevoteeRegisterPage() {
                   marginTop: 3,
                 }}
               >
-                {t('registerBrandSubtitle')}
+                {t('devotee.registerBrandSubtitle')}
               </div>
             </div>
           </div>
 
-          <p className="dp-auth-eyebrow">{t('eyebrow')}</p>
+          <p className="dp-auth-eyebrow">{t('devotee.eyebrow')}</p>
           <h1 className="dp-auth-title">
-            {t('loginHeroLine1')}
+            {t('devotee.loginHeroLine1')}
             <br />
-            <span>{t('loginHeroHighlight')}</span>
+            <span>{t('devotee.loginHeroHighlight')}</span>
           </h1>
-          <p className="dp-auth-tagline">{t('registerSubtitle')}</p>
+          <p className="dp-auth-tagline">{t('devotee.registerSubtitle')}</p>
 
           <div className="dp-auth-card" style={{ marginTop: 26, maxWidth: 480 }}>
             <span className="dp-auth-corner tl" />
@@ -71,16 +57,15 @@ export function DevoteeRegisterPage() {
             <span className="dp-auth-corner bl" />
             <span className="dp-auth-corner br" />
 
-            <h2 className="dp-auth-card-title">{t('registerTitle')}</h2>
+            <h2 className="dp-auth-card-title">{t('devotee.registerTitle')}</h2>
 
             <DevoteeRegisterForm />
           </div>
 
           <p className="dp-auth-footer-link" style={{ marginTop: 14 }}>
-            <Link to="/login">{t('loginStaffCross')}</Link>
+            <Link to="/login">{t('devotee.loginStaffCross')}</Link>
           </p>
         </div>
       </div>
-    </div>
   )
 }

@@ -1,35 +1,21 @@
 import { Link } from 'react-router-dom'
 import { DevoteeArtwork } from '@/features/devotee/components/DevoteeArtwork'
 import { DevoteeLoginForm } from '@/features/devotee/components/DevoteeLoginForm'
-import { DEVOTEE_LANGUAGES } from '@/features/devotee/i18n/devoteeTranslations'
-import { useDevoteeLanguage } from '@/features/devotee/i18n/useDevoteeLanguage'
+import { useDevoteeTranslation } from '@/i18n/useTranslation'
+import { useGetTempleProfileQuery } from '@/services/api/endpoints/templeProfileApi'
+import { resolveTempleName } from '@/utils/templeName'
 import '@/features/devotee/styles/devoteePortal.css'
 
+// Rendered inside DevoteeLayout (see DevoteeRoutes.tsx) — the shared
+// dp-header/dp-footer/language-strip already come from there, so this page
+// only contributes the actual auth-hero content, not a full standalone shell.
 export function DevoteeLoginPage() {
-  const { t, language, setLanguage } = useDevoteeLanguage()
+  const { t, language } = useDevoteeTranslation()
+  const { data: templeProfile } = useGetTempleProfileQuery()
 
   return (
-    <div className="devotee-portal">
-      <div className="dp-lang-strip">
-        <span className="dp-lang-icon" aria-hidden="true">
-          🕉️
-        </span>
-        {DEVOTEE_LANGUAGES.map((option, index) => (
-          <span key={option.code} style={{ display: 'flex', alignItems: 'center' }}>
-            {index > 0 ? <span className="dp-sep">|</span> : null}
-            <button
-              type="button"
-              className={language === option.code ? 'active' : ''}
-              onClick={() => setLanguage(option.code)}
-            >
-              {option.label}
-            </button>
-          </span>
-        ))}
-      </div>
-
-      <div className="dp-auth-hero">
-        <DevoteeArtwork />
+    <div className="dp-auth-hero">
+      <DevoteeArtwork />
 
         <div>
           <div className="dp-auth-brand-row">
@@ -40,7 +26,7 @@ export function DevoteeLoginPage() {
             </svg>
             <div>
               <div style={{ fontFamily: 'var(--dp-font-brand)', fontSize: 21, color: 'var(--dp-maroon)', lineHeight: 1 }}>
-                {t('appName')}
+                {resolveTempleName(templeProfile, language, t('devotee.appName'))}
               </div>
               <div
                 style={{
@@ -52,24 +38,24 @@ export function DevoteeLoginPage() {
                   marginTop: 3,
                 }}
               >
-                {t('loginBrandSubtitle')}
+                {t('devotee.loginBrandSubtitle')}
               </div>
             </div>
           </div>
 
-          <p className="dp-auth-eyebrow">{t('eyebrow')}</p>
+          <p className="dp-auth-eyebrow">{t('devotee.eyebrow')}</p>
           <h1 className="dp-auth-title">
-            {t('loginHeroLine1')}
+            {t('devotee.loginHeroLine1')}
             <br />
-            <span>{t('loginHeroHighlight')}</span>
+            <span>{t('devotee.loginHeroHighlight')}</span>
           </h1>
-          <p className="dp-auth-tagline">{t('loginHeroTagline')}</p>
+          <p className="dp-auth-tagline">{t('devotee.loginHeroTagline')}</p>
           <div className="dp-auth-chips">
             <div className="dp-card" style={{ padding: '9px 14px', borderRadius: 24, fontSize: '12.5px' }}>
-              {t('loginChipSecure')}
+              {t('devotee.loginChipSecure')}
             </div>
             <div className="dp-card" style={{ padding: '9px 14px', borderRadius: 24, fontSize: '12.5px' }}>
-              {t('loginChipSupport')}
+              {t('devotee.loginChipSupport')}
             </div>
           </div>
 
@@ -79,22 +65,21 @@ export function DevoteeLoginPage() {
             <span className="dp-auth-corner bl" />
             <span className="dp-auth-corner br" />
 
-            <h2 className="dp-auth-card-title">{t('loginTabTitle')}</h2>
+            <h2 className="dp-auth-card-title">{t('devotee.loginTabTitle')}</h2>
 
             <DevoteeLoginForm />
 
             <p className="dp-auth-footer-link">
-              {t('loginNoAccount')}{' '}
-              <Link to="/devotee/register">{t('loginCreateAccount')}</Link>
+              {t('devotee.loginNoAccount')}{' '}
+              <Link to="/devotee/register">{t('devotee.loginCreateAccount')}</Link>
             </p>
-            <p className="dp-auth-card-note">{t('loginTermsNote')}</p>
+            <p className="dp-auth-card-note">{t('devotee.loginTermsNote')}</p>
           </div>
 
           <p className="dp-auth-footer-link" style={{ marginTop: 14 }}>
-            <Link to="/login">{t('loginStaffCross')}</Link>
+            <Link to="/login">{t('devotee.loginStaffCross')}</Link>
           </p>
         </div>
       </div>
-    </div>
   )
 }

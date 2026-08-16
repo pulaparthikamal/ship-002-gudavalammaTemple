@@ -94,6 +94,15 @@ export const usersApi = apiSlice.injectEndpoints({
         { type: 'User', id: 'LIST' },
       ],
     }),
+    updateOwnProfile: builder.mutation<User, { firstName?: string; lastName?: string; email?: string; phone?: string }>({
+      query: (data) => ({
+        url: '/users/me',
+        method: 'PATCH',
+        data,
+      }),
+      transformResponse: (response: unknown) =>
+        readResponsePath<User>(response, userApiDetails.responseDataPath),
+    }),
     bulkDeleteUsers: builder.mutation<EntityId[], { selectedIds: EntityId[] }>({
       query: (payload) => ({
         url: `${userApiDetails.endpoint}/multiDelete`,
@@ -116,4 +125,5 @@ export const {
   useGetUserQuery,
   useGetUsersQuery,
   useUpdateUserMutation,
+  useUpdateOwnProfileMutation,
 } = usersApi
