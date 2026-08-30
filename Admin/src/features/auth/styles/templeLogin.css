@@ -111,7 +111,10 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 48px 32px 60px;
-  align-items: center;
+  /* 'start', not 'center' — a tall artwork image must never push the right
+     column's login card down/off-screen by vertically centering it against
+     a much taller sibling; the two columns should size independently. */
+  align-items: start;
   min-height: calc(100vh - 42px);
 }
 
@@ -130,54 +133,17 @@
   min-height: 360px;
 }
 
-.temple-login-sunburst {
-  position: absolute;
-  width: 420px;
-  height: 420px;
-  opacity: 0.5;
-  animation: temple-login-spin 100s linear infinite;
-}
-
-@keyframes temple-login-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.temple-login-gopuram {
-  position: relative;
-  z-index: 2;
+.temple-login-art-image {
+  width: 100%;
+  max-width: 560px;
+  max-height: 78vh;
+  object-fit: contain;
   filter: drop-shadow(0 18px 30px rgba(122, 18, 32, 0.2));
 }
 
-.temple-login-petals {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.temple-login-petal {
-  position: absolute;
-  top: -16px;
-  width: 10px;
-  height: 14px;
-  border-radius: 0 100% 0 100%;
-  background: linear-gradient(135deg, #e8962e, var(--tl-vermilion));
-  animation: temple-login-fall 7s linear infinite;
-}
-
-@keyframes temple-login-fall {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 0;
-  }
-  8% {
-    opacity: 0.9;
-  }
-  100% {
-    transform: translateY(420px) translateX(var(--tl-drift, 0px)) rotate(320deg);
-    opacity: 0;
+@media (max-width: 900px) {
+  .temple-login-art-image {
+    max-height: 380px;
   }
 }
 

@@ -7,6 +7,7 @@ export const updateTempleProfileSchema = z.object({
     address: z.string().optional(),
     helpline: z.string().optional(),
     logoUrl: z.string().optional(),
+    deityImageUrl: z.string().optional(),
     upiId: z.string().optional(),
     socialLinks: z
       .object({

@@ -10,7 +10,7 @@ export const apiSlice = createApi({
     'Facility', 'Announcement', 'Booking',
     'Donor', 'Property', 'Asset', 'Liability', 'ExpenseEntry', 'ExpenseEvent', 'TempleProfile',
     'Language', 'PageContent', 'TempleEvent', 'EventRegistration', 'NearbyPlace', 'ReconfigureCatalog',
-    'AnalyticsSummary',
+    'AnalyticsSummary', 'NavTab',
   ],
 
   invalidationBehavior: 'immediately',

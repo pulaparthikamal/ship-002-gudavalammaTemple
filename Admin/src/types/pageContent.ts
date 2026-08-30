@@ -9,6 +9,7 @@ export const SCREEN_KEYS = [
   'live',
   'events',
   'nearbyPlaces',
+  'devoteeAuth',
 ] as const
 
 export type ScreenKey = (typeof SCREEN_KEYS)[number]
@@ -24,6 +25,7 @@ export const SCREEN_LABELS: Record<ScreenKey, string> = {
   live: 'Live',
   events: 'Events',
   nearbyPlaces: 'Nearby Places',
+  devoteeAuth: 'Devotee Login / Register Artwork',
 }
 
 export type WidgetType =
@@ -51,6 +53,7 @@ export interface Widget {
   h: number
   content?: Record<string, string>
   imageUrl?: string
+  objectFit?: 'cover' | 'contain'
   linkUrl?: string
   images?: CarouselImage[]
   slideDurationMs?: number
@@ -78,6 +81,9 @@ export const SCREEN_PREVIEW_ROUTES: Record<ScreenKey, string> = {
   live: '/devotee/live',
   events: '/devotee/events',
   nearbyPlaces: '/devotee/nearby-places',
+  // Shared across login/register/forgot-password — login stands in for
+  // preview purposes since a screen key maps to one route here.
+  devoteeAuth: '/devotee/login',
 }
 
 export const WIDGET_PALETTE: Array<{ type: WidgetType; label: string; defaultW: number; defaultH: number }> = [

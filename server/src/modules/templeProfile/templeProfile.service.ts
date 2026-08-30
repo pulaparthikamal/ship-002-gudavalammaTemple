@@ -64,6 +64,7 @@ export const templeProfileService = {
     address: string;
     helpline: string;
     logoUrl: string;
+    deityImageUrl: string;
     upiId: string;
     socialLinks: Record<string, string>;
     timings: ITempleTiming[];

@@ -43,7 +43,13 @@ function ButtonWidget({ widget }: { widget: Widget }) {
 
 function ImageWidget({ widget }: { widget: Widget }) {
   if (!widget.imageUrl) return null
-  const img = <img src={resolveApiAssetUrl(widget.imageUrl)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 12 }} />
+  const img = (
+    <img
+      src={resolveApiAssetUrl(widget.imageUrl)}
+      alt=""
+      style={{ width: '100%', height: '100%', objectFit: widget.objectFit ?? 'cover', borderRadius: 12 }}
+    />
+  )
   return widget.linkUrl ? <a href={widget.linkUrl}>{img}</a> : img
 }
 

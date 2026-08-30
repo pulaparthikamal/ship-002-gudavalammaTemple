@@ -3,6 +3,7 @@ export enum RoleEnum {
   ADMIN = 'ADMIN',
   MANAGER = 'MANAGER',
   USER = 'USER',
+  GUEST = 'GUEST',
 }
 
 export const SEED_ROLES = [
@@ -139,6 +140,10 @@ export const SEED_ROLES = [
       "analytics": {
         "type": "View",
         "actions": ["View"]
+      },
+      "navTab": {
+        "type": "Edit",
+        "actions": ["View", "Update"]
       }
     }
   },
@@ -179,5 +184,15 @@ export const SEED_ROLES = [
         "actions": ["View"]
       }
     }
+  },
+  {
+    role: RoleEnum.GUEST,
+    roleType: 'Guest',
+    status: 'Active',
+    active: true,
+    // Never assigned to a real user account — an anonymous devotee-site
+    // visitor has no session/User doc at all. This row exists only as a
+    // labeled column for the navTab visibility matrix (see navTab module).
+    permissions: {}
   },
 ];

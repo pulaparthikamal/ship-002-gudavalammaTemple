@@ -24,6 +24,7 @@ import { languageI18n } from './en/language.i18n';
 import { templeEventI18n } from './en/templeEvent.i18n';
 import { nearbyPlaceI18n } from './en/nearbyPlace.i18n';
 import { templeReconfigureI18n } from './en/templeReconfigure.i18n';
+import { navTabI18n } from './en/navTab.i18n';
 
 import { authI18n as authI18nTe } from './te/auth.i18n';
 import { userI18n as userI18nTe } from './te/user.i18n';
@@ -51,6 +52,7 @@ import { languageI18n as languageI18nTe } from './te/language.i18n';
 import { templeEventI18n as templeEventI18nTe } from './te/templeEvent.i18n';
 import { nearbyPlaceI18n as nearbyPlaceI18nTe } from './te/nearbyPlace.i18n';
 import { templeReconfigureI18n as templeReconfigureI18nTe } from './te/templeReconfigure.i18n';
+import { navTabI18n as navTabI18nTe } from './te/navTab.i18n';
 
 import { authI18n as authI18nHi } from './hi/auth.i18n';
 import { userI18n as userI18nHi } from './hi/user.i18n';
@@ -78,6 +80,7 @@ import { languageI18n as languageI18nHi } from './hi/language.i18n';
 import { templeEventI18n as templeEventI18nHi } from './hi/templeEvent.i18n';
 import { nearbyPlaceI18n as nearbyPlaceI18nHi } from './hi/nearbyPlace.i18n';
 import { templeReconfigureI18n as templeReconfigureI18nHi } from './hi/templeReconfigure.i18n';
+import { navTabI18n as navTabI18nHi } from './hi/navTab.i18n';
 
 const translations: Record<string, any> = {
   en: {
@@ -111,6 +114,7 @@ const translations: Record<string, any> = {
     templeEvent: templeEventI18n,
     nearbyPlace: nearbyPlaceI18n,
     templeReconfigure: templeReconfigureI18n,
+    navTab: navTabI18n,
   },
   te: {
     auth: authI18nTe,
@@ -143,6 +147,7 @@ const translations: Record<string, any> = {
     templeEvent: templeEventI18nTe,
     nearbyPlace: nearbyPlaceI18nTe,
     templeReconfigure: templeReconfigureI18nTe,
+    navTab: navTabI18nTe,
   },
   hi: {
     auth: authI18nHi,
@@ -175,6 +180,7 @@ const translations: Record<string, any> = {
     templeEvent: templeEventI18nHi,
     nearbyPlace: nearbyPlaceI18nHi,
     templeReconfigure: templeReconfigureI18nHi,
+    navTab: navTabI18nHi,
   },
 };
 

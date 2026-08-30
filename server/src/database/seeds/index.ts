@@ -9,6 +9,7 @@ import { logger } from '../../utils/logger.util';
 import { seedSevaCatalog } from '../../modules/seva/seva.service';
 import { seedDarshanQuotas } from '../../modules/darshan/darshan.service';
 import { languageService } from '../../modules/language/language.service';
+import { navTabService } from '../../modules/navTab/navTab.service';
 
 /**
  * Upsert roles by `role` enum value so re-running the seed never orphans
@@ -81,9 +82,10 @@ const run = async () => {
     await seedSevaCatalog();
     await seedDarshanQuotas();
     const languagesCount = await languageService.seedLanguages();
+    const navTabsCount = await navTabService.seedNavTabs();
 
     logger.info(
-      `Seed complete: ${rolesCount} roles upserted, ${menusCount} menus present, ${settingsCount} llm settings upserted, seva catalog + darshan quotas seeded, ${languagesCount} languages upserted.`
+      `Seed complete: ${rolesCount} roles upserted, ${menusCount} menus present, ${settingsCount} llm settings upserted, seva catalog + darshan quotas seeded, ${languagesCount} languages upserted, ${navTabsCount} nav tabs upserted.`
     );
 
     await mongoose.connection.close();

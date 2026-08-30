@@ -19,7 +19,7 @@ import type {
 type TFn = (key: string, params?: Record<string, string | number>) => string
 
 const roleStatuses: RoleStatus[] = ['Active', 'Inactive', 'Pending']
-const roleTypes: RoleType[] = ['User', 'Manager', 'Admin', 'Super Admin']
+const roleTypes: RoleType[] = ['User', 'Manager', 'Admin', 'Super Admin', 'Guest']
 
 export const roleApiDetails = {
   endpoint: '/roles',

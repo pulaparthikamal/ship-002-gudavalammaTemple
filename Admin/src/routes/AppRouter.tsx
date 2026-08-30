@@ -36,6 +36,7 @@ import { BookingsPage } from '@/pages/BookingsPage'
 import { NearbyPlacesPage } from '@/pages/NearbyPlacesPage'
 import { ReconfigureTemplePage } from '@/pages/ReconfigureTemplePage'
 import { AnalyticsPage } from '@/pages/AnalyticsPage'
+import { NavTabsPage } from '@/pages/NavTabsPage'
 
 export function AppRouter() {
   return (
@@ -81,6 +82,7 @@ export function AppRouter() {
           <Route path="/nearby-places" element={<NearbyPlacesPage />} />
           <Route path="/reconfigure-temple" element={<ReconfigureTemplePage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
+          <Route path="/nav-tabs" element={<NavTabsPage />} />
           <Route path="/forbidden" element={<ForbiddenPage />} />
         </Route>
       </Route>

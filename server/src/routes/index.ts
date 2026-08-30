@@ -32,6 +32,7 @@ import templeEventRoutes, { eventRegistrationRouter } from '../modules/templeEve
 import nearbyPlaceRoutes from '../modules/nearbyPlace/nearbyPlace.route';
 import templeReconfigureRoutes from '../modules/templeReconfigure/templeReconfigure.route';
 import analyticsEventRoutes from '../modules/analytics/analyticsEvent.route';
+import navTabRoutes from '../modules/navTab/navTab.route';
 
 const router = Router();
 
@@ -73,5 +74,6 @@ router.use('/event-registrations', eventRegistrationRouter);
 router.use('/nearby-places', nearbyPlaceRoutes);
 router.use('/temple-reconfigure', templeReconfigureRoutes);
 router.use('/analytics', analyticsEventRoutes);
+router.use('/nav-tabs', navTabRoutes);
 
 export default router;

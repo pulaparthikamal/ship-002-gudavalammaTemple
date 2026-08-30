@@ -12,6 +12,7 @@ export const SCREEN_KEYS = [
   'live',
   'events',
   'nearbyPlaces',
+  'devoteeAuth',
 ] as const;
 
 export type ScreenKey = (typeof SCREEN_KEYS)[number];
@@ -47,6 +48,10 @@ export interface IWidget {
   h: number;
   content?: Record<string, string>;
   imageUrl?: string;
+  /** For `image` widgets — 'contain' avoids cropping a portrait photo that
+   * doesn't match the widget box's aspect ratio; defaults to 'cover' for
+   * every pre-existing widget/screen (unchanged behavior). */
+  objectFit?: 'cover' | 'contain';
   linkUrl?: string;
   images?: ICarouselImage[];
   slideDurationMs?: number;

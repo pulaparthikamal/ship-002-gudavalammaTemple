@@ -7,6 +7,7 @@ import { InputText } from 'primereact/inputtext'
 import { Message } from 'primereact/message'
 import { Plus, Trash2 } from 'lucide-react'
 import { FormInputText } from '@/components/forms/FormInputText'
+import { FormFileUpload } from '@/components/forms/FormFileUpload'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { useStaffTranslation } from '@/i18n/useTranslation'
 import { useGetTempleProfileQuery, useUpdateTempleProfileMutation } from '@/services/api/endpoints/templeProfileApi'
@@ -17,6 +18,7 @@ const templeProfileSchema = z.object({
   address: z.string().optional(),
   helpline: z.string().optional(),
   logoUrl: z.string().optional(),
+  deityImageUrl: z.string().optional(),
   upiId: z.string().optional(),
   facebook: z.string().optional(),
   instagram: z.string().optional(),
@@ -49,6 +51,7 @@ export function TempleProfilePage() {
       address: '',
       helpline: '',
       logoUrl: '',
+      deityImageUrl: '',
       upiId: '',
       facebook: '',
       instagram: '',
@@ -71,6 +74,7 @@ export function TempleProfilePage() {
         address: profile.address ?? '',
         helpline: profile.helpline ?? '',
         logoUrl: profile.logoUrl ?? '',
+        deityImageUrl: profile.deityImageUrl ?? '',
         upiId: profile.upiId ?? '',
         facebook: profile.socialLinks?.facebook ?? '',
         instagram: profile.socialLinks?.instagram ?? '',
@@ -90,6 +94,7 @@ export function TempleProfilePage() {
       address: values.address,
       helpline: values.helpline,
       logoUrl: values.logoUrl,
+      deityImageUrl: values.deityImageUrl,
       upiId: values.upiId,
       socialLinks: {
         facebook: values.facebook,
@@ -124,7 +129,26 @@ export function TempleProfilePage() {
         <FormInputText control={control} name="tagline" label={t('Tagline')} />
         <FormInputText control={control} name="address" label={t('Address')} />
         <FormInputText control={control} name="helpline" label={t('Helpline')} />
-        <FormInputText control={control} name="logoUrl" label={t('Logo URL')} />
+        <FormFileUpload
+          control={control}
+          name="deityImageUrl"
+          label={t('Deity picture')}
+          helperText={t(
+            'The large deity/idol photo shown on the staff and devotee login pages’ artwork panel and the devotee home page hero. Upload once here and every one of those places updates automatically, sized to fit without cropping.',
+          )}
+          accept="image/*"
+          folder="temple-profile"
+        />
+        <FormFileUpload
+          control={control}
+          name="logoUrl"
+          label={t('Logo (small brand mark)')}
+          helperText={t(
+            'The small icon shown next to the temple name in headers, the sidebar, and login pages — keep this compact; use Deity picture above for the large artwork.',
+          )}
+          accept="image/*"
+          folder="temple-profile"
+        />
         <FormInputText
           control={control}
           name="upiId"

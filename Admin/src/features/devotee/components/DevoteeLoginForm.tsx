@@ -223,7 +223,7 @@ export function DevoteeLoginForm() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-3">
       <div className="dp-login-mode-toggle" role="tablist">
         <button
           type="button"
@@ -246,7 +246,7 @@ export function DevoteeLoginForm() {
       </div>
 
       {mode === 'password' ? (
-        <form className="space-y-5" onSubmit={handleSubmit(onPasswordSubmit)} noValidate>
+        <form className="space-y-3" onSubmit={handleSubmit(onPasswordSubmit)} noValidate>
           {formError ? <Message severity="error" text={formError} className="w-full justify-start" style={{ marginBottom: '0.75rem' }} /> : null}
 
           <div className="dp-login-mode-toggle" style={{ marginBottom: 4 }} role="tablist">
@@ -302,7 +302,7 @@ export function DevoteeLoginForm() {
           />
         </form>
       ) : (
-        <div className="space-y-5">
+        <div className="space-y-3">
           {otpError ? <Message severity="error" text={otpError} className="w-full justify-start" /> : null}
 
           <div className="flex flex-col gap-1.5">

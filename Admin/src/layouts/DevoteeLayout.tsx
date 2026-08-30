@@ -9,6 +9,10 @@ import { useToast } from '@/hooks/useToast'
 import { useGetTempleProfileQuery } from '@/services/api/endpoints/templeProfileApi'
 import { resolveTempleName } from '@/utils/templeName'
 import { trackClick, trackPageview } from '@/utils/analytics'
+import { useGetEnabledNavTabsQuery } from '@/services/api/endpoints/navTabsApi'
+import type { NavTabKey } from '@/services/api/endpoints/navTabsApi'
+import { resolveApiAssetUrl } from '@/services/api/apiConfig'
+import gudavalammaDeviImage from '@/assets/gudavalamma-devi.webp'
 
 const SOCIAL_ICONS: { key: 'facebook' | 'instagram' | 'youtube' | 'twitter' | 'whatsapp'; icon: string; label: string }[] = [
   { key: 'facebook', icon: '📘', label: 'Facebook' },
@@ -20,6 +24,7 @@ const SOCIAL_ICONS: { key: 'facebook' | 'instagram' | 'youtube' | 'twitter' | 'w
 
 const NAV_ITEMS: {
   to: string
+  navKey: NavTabKey
   labelKey:
     | 'devotee.navHome'
     | 'devotee.navDarshan'
@@ -34,17 +39,17 @@ const NAV_ITEMS: {
     | 'devotee.navNearbyPlaces'
   trackLabel?: string
 }[] = [
-  { to: '/', labelKey: 'devotee.navHome' },
-  { to: '/devotee/darshan', labelKey: 'devotee.navDarshan', trackLabel: 'nav_darshan' },
-  { to: '/devotee/seva', labelKey: 'devotee.navSeva', trackLabel: 'nav_seva' },
-  { to: '/devotee/accommodation', labelKey: 'devotee.navAccommodation', trackLabel: 'nav_accommodation' },
-  { to: '/devotee/prasadam', labelKey: 'devotee.navPrasadam', trackLabel: 'nav_prasadam' },
-  { to: '/devotee/donations', labelKey: 'devotee.navDonations', trackLabel: 'nav_donations' },
-  { to: '/devotee/events', labelKey: 'devotee.navEvents', trackLabel: 'nav_events' },
-  { to: '/devotee/live', labelKey: 'devotee.navLive', trackLabel: 'nav_live' },
-  { to: '/devotee/bookings', labelKey: 'devotee.navBookings', trackLabel: 'nav_bookings' },
-  { to: '/devotee/facilities', labelKey: 'devotee.navFacilities', trackLabel: 'nav_facilities' },
-  { to: '/devotee/nearby-places', labelKey: 'devotee.navNearbyPlaces', trackLabel: 'nav_nearby_places' },
+  { to: '/', navKey: 'home', labelKey: 'devotee.navHome' },
+  { to: '/devotee/darshan', navKey: 'darshan', labelKey: 'devotee.navDarshan', trackLabel: 'nav_darshan' },
+  { to: '/devotee/seva', navKey: 'seva', labelKey: 'devotee.navSeva', trackLabel: 'nav_seva' },
+  { to: '/devotee/accommodation', navKey: 'accommodation', labelKey: 'devotee.navAccommodation', trackLabel: 'nav_accommodation' },
+  { to: '/devotee/prasadam', navKey: 'prasadam', labelKey: 'devotee.navPrasadam', trackLabel: 'nav_prasadam' },
+  { to: '/devotee/donations', navKey: 'donations', labelKey: 'devotee.navDonations', trackLabel: 'nav_donations' },
+  { to: '/devotee/events', navKey: 'events', labelKey: 'devotee.navEvents', trackLabel: 'nav_events' },
+  { to: '/devotee/live', navKey: 'live', labelKey: 'devotee.navLive', trackLabel: 'nav_live' },
+  { to: '/devotee/bookings', navKey: 'bookings', labelKey: 'devotee.navBookings', trackLabel: 'nav_bookings' },
+  { to: '/devotee/facilities', navKey: 'facilities', labelKey: 'devotee.navFacilities', trackLabel: 'nav_facilities' },
+  { to: '/devotee/nearby-places', navKey: 'nearbyPlaces', labelKey: 'devotee.navNearbyPlaces', trackLabel: 'nav_nearby_places' },
 ]
 
 export function DevoteeLayout() {
@@ -56,6 +61,11 @@ export function DevoteeLayout() {
   const user = useAppSelector(selectCurrentUser)
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
   const { data: templeProfile } = useGetTempleProfileQuery()
+  const { data: enabledNavTabs } = useGetEnabledNavTabsQuery(isAuthenticated ? 'user' : 'guest')
+  const visibleNavItems = enabledNavTabs
+    ? NAV_ITEMS.filter((item) => enabledNavTabs.some((tab) => tab.key === item.navKey))
+    : NAV_ITEMS
+  const brandMarkSrc = templeProfile?.logoUrl ? resolveApiAssetUrl(templeProfile.logoUrl) : gudavalammaDeviImage
 
   useEffect(() => {
     trackPageview(location.pathname)
@@ -78,11 +88,7 @@ export function DevoteeLayout() {
 
       <header className="dp-header">
         <NavLink to="/" className="dp-brand">
-          <svg viewBox="0 0 40 40" width="30" height="30" aria-hidden="true">
-            <path d="M20 2 L26 14 L14 14 Z" fill="#7c1220" />
-            <rect x="16" y="14" width="8" height="18" fill="#a9790c" />
-            <circle cx="20" cy="34" r="3" fill="#c1421a" />
-          </svg>
+          <img className="dp-brand-mark" src={brandMarkSrc} alt="" aria-hidden="true" />
           <span>
             <span className="dp-brand-name" style={{ display: 'block' }}>
               {resolveTempleName(templeProfile, language, t('devotee.appName'))}
@@ -94,7 +100,7 @@ export function DevoteeLayout() {
         </NavLink>
 
         <nav className="dp-nav">
-          {NAV_ITEMS.map((item) => (
+          {visibleNavItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}

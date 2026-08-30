@@ -20,6 +20,10 @@ export interface ITempleProfile extends BaseDocument {
   address?: string;
   helpline?: string;
   logoUrl?: string;
+  /** The large deity/idol photo — used for the login pages' artwork panel
+   * and the devotee home hero, as distinct from `logoUrl` (the small brand
+   * mark shown in headers/sidebars/nav). */
+  deityImageUrl?: string;
   /** The temple's own UPI VPA (e.g. `templename@okaxis`) — used to build a
    * direct upi://pay deep link/QR for bookings & donations. No payment
    * gateway involved; see server/src/utils/upi.util.ts. */
@@ -63,6 +67,7 @@ const templeProfileSchema = new Schema<ITempleProfile>(
     address: { type: String },
     helpline: { type: String },
     logoUrl: { type: String },
+    deityImageUrl: { type: String },
     upiId: { type: String },
     nameTranslations: { type: Schema.Types.Mixed, default: {} },
     socialLinks: { type: socialLinksSchema, default: {} },

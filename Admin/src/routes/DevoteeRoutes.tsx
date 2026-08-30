@@ -16,6 +16,7 @@ import { DevoteeRegisterPage } from '@/pages/devotee/DevoteeRegisterPage'
 import { DevoteeSevaPage } from '@/pages/devotee/DevoteeSevaPage'
 import { DevoteeProtectedRoute } from './DevoteeProtectedRoute'
 import { DevoteePublicOnlyRoute } from './DevoteePublicOnlyRoute'
+import { NavTabGate } from './NavTabGate'
 
 export function DevoteeRoutes() {
   return (
@@ -37,20 +38,43 @@ export function DevoteeRoutes() {
         <Route path="dashboard" element={<Navigate to="/" replace />} />
 
         {/* Guest checkout: these pages work without a session — booking forms
-            collect name/email/phone inline when the visitor isn't logged in. */}
-        <Route path="darshan" element={<DevoteeDarshanPage />} />
-        <Route path="seva" element={<DevoteeSevaPage />} />
-        <Route path="accommodation" element={<DevoteeAccommodationPage />} />
-        <Route path="donations" element={<DevoteeDonationPage />} />
-        <Route path="prasadam" element={<DevoteePrasadamPage />} />
-        <Route path="live" element={<DevoteeLivePage />} />
-        <Route path="facilities" element={<DevoteeFacilitiesPage />} />
-        <Route path="events" element={<DevoteeEventsPage />} />
-        <Route path="nearby-places" element={<DevoteeNearbyPlacesPage />} />
+            collect name/email/phone inline when the visitor isn't logged in.
+            Each is wrapped in NavTabGate so a staff admin disabling a tab
+            (see NavTabsPage) also blocks direct-URL access, not just the nav
+            link. */}
+        <Route element={<NavTabGate tabKey="darshan" />}>
+          <Route path="darshan" element={<DevoteeDarshanPage />} />
+        </Route>
+        <Route element={<NavTabGate tabKey="seva" />}>
+          <Route path="seva" element={<DevoteeSevaPage />} />
+        </Route>
+        <Route element={<NavTabGate tabKey="accommodation" />}>
+          <Route path="accommodation" element={<DevoteeAccommodationPage />} />
+        </Route>
+        <Route element={<NavTabGate tabKey="donations" />}>
+          <Route path="donations" element={<DevoteeDonationPage />} />
+        </Route>
+        <Route element={<NavTabGate tabKey="prasadam" />}>
+          <Route path="prasadam" element={<DevoteePrasadamPage />} />
+        </Route>
+        <Route element={<NavTabGate tabKey="live" />}>
+          <Route path="live" element={<DevoteeLivePage />} />
+        </Route>
+        <Route element={<NavTabGate tabKey="facilities" />}>
+          <Route path="facilities" element={<DevoteeFacilitiesPage />} />
+        </Route>
+        <Route element={<NavTabGate tabKey="events" />}>
+          <Route path="events" element={<DevoteeEventsPage />} />
+        </Route>
+        <Route element={<NavTabGate tabKey="nearbyPlaces" />}>
+          <Route path="nearby-places" element={<DevoteeNearbyPlacesPage />} />
+        </Route>
 
         {/* These inherently require a real account — no persistent guest identity. */}
         <Route element={<DevoteeProtectedRoute />}>
-          <Route path="bookings" element={<DevoteeBookingsPage />} />
+          <Route element={<NavTabGate tabKey="bookings" />}>
+            <Route path="bookings" element={<DevoteeBookingsPage />} />
+          </Route>
           <Route path="profile" element={<DevoteeProfilePage />} />
         </Route>
       </Route>

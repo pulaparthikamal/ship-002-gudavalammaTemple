@@ -54,6 +54,7 @@ const defaultMenus = [
       { name: 'Nearby Places', route: '/nearby-places', iconName: 'compass', sequenceNo: 39, title: 'Nearby Places', permissionKey: 'nearbyPlace' },
       { name: 'Reconfigure Temple', route: '/reconfigure-temple', iconName: 'wand', sequenceNo: 40, title: 'Reconfigure Temple', permissionKey: 'templeReconfigure' },
       { name: 'Analytics', route: '/analytics', iconName: 'activity', sequenceNo: 41, title: 'Analytics', permissionKey: 'analytics' },
+      { name: 'Nav Tabs', route: '/nav-tabs', iconName: 'menu', sequenceNo: 42, title: 'Nav Tabs', permissionKey: 'navTab' },
     ]
   },
 ];

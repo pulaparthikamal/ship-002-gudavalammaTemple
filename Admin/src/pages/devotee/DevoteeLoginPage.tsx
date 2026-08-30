@@ -4,6 +4,8 @@ import { DevoteeLoginForm } from '@/features/devotee/components/DevoteeLoginForm
 import { useDevoteeTranslation } from '@/i18n/useTranslation'
 import { useGetTempleProfileQuery } from '@/services/api/endpoints/templeProfileApi'
 import { resolveTempleName } from '@/utils/templeName'
+import { resolveApiAssetUrl } from '@/services/api/apiConfig'
+import gudavalammaDeviImage from '@/assets/gudavalamma-devi.webp'
 import '@/features/devotee/styles/devoteePortal.css'
 
 // Rendered inside DevoteeLayout (see DevoteeRoutes.tsx) — the shared
@@ -12,6 +14,7 @@ import '@/features/devotee/styles/devoteePortal.css'
 export function DevoteeLoginPage() {
   const { t, language } = useDevoteeTranslation()
   const { data: templeProfile } = useGetTempleProfileQuery()
+  const brandMarkSrc = templeProfile?.logoUrl ? resolveApiAssetUrl(templeProfile.logoUrl) : gudavalammaDeviImage
 
   return (
     <div className="dp-auth-hero">
@@ -19,11 +22,7 @@ export function DevoteeLoginPage() {
 
         <div>
           <div className="dp-auth-brand-row">
-            <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true">
-              <path d="M20 2 L26 14 L14 14 Z" fill="#7c1220" />
-              <rect x="16" y="14" width="8" height="18" fill="#a9790c" />
-              <circle cx="20" cy="34" r="3" fill="#c1421a" />
-            </svg>
+            <img src={brandMarkSrc} alt="" aria-hidden="true" style={{ height: 34, width: 'auto', objectFit: 'contain' }} />
             <div>
               <div style={{ fontFamily: 'var(--dp-font-brand)', fontSize: 21, color: 'var(--dp-maroon)', lineHeight: 1 }}>
                 {resolveTempleName(templeProfile, language, t('devotee.appName'))}
@@ -59,7 +58,7 @@ export function DevoteeLoginPage() {
             </div>
           </div>
 
-          <div className="dp-auth-card" style={{ marginTop: 26, maxWidth: 440 }}>
+          <div className="dp-auth-card" style={{ marginTop: 14, maxWidth: 440 }}>
             <span className="dp-auth-corner tl" />
             <span className="dp-auth-corner tr" />
             <span className="dp-auth-corner bl" />

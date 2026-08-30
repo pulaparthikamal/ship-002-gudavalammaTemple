@@ -9,6 +9,8 @@ import { useGetTempleEventsQuery } from '@/services/api/endpoints/templeEventsAp
 import { useGetTempleProfileQuery } from '@/services/api/endpoints/templeProfileApi'
 import { resolveTempleName } from '@/utils/templeName'
 import { trackClick } from '@/utils/analytics'
+import { resolveApiAssetUrl } from '@/services/api/apiConfig'
+import gudavalammaDeviImage from '@/assets/gudavalamma-devi.webp'
 
 function useCountUp(target: number, durationMs: number) {
   const [value, setValue] = useState(0)
@@ -115,6 +117,7 @@ export function DevoteeDashboardPage() {
   ]
 
   const schedule = templeProfile?.timings ?? []
+  const heroDeityImage = templeProfile?.deityImageUrl ? resolveApiAssetUrl(templeProfile.deityImageUrl) : gudavalammaDeviImage
 
   return (
     <div className="dp-page">
@@ -153,6 +156,13 @@ export function DevoteeDashboardPage() {
       ) : (
         <div className="dp-home-hero">
           <h1>🙏 {t('devotee.homeHeroTitle', { templeName: resolveTempleName(templeProfile, language, t('devotee.appName')) })}</h1>
+          <div className="dp-hero-deity-wrap">
+            <img
+              className="dp-hero-deity"
+              src={heroDeityImage}
+              alt={resolveTempleName(templeProfile, language, t('devotee.appName'))}
+            />
+          </div>
           <p>{t('devotee.homeHeroSubtitle')}</p>
           <div className="dp-home-hero-actions">
             <Link to="/devotee/login" className="dp-cta-btn dp-cta-btn-primary">
