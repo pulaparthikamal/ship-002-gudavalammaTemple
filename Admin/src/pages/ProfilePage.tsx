@@ -7,11 +7,13 @@ import { FormInputText } from '@/components/forms/FormInputText'
 import { PageHeader } from '@/components/ui/PageHeader'
 import { selectCurrentUser, selectLoginData, updateProfile } from '@/features/auth/authSlice'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
+import { useStaffTranslation } from '@/i18n/useTranslation'
 import { profileSchema } from '@/schemas/profileSchema'
 import type { ProfileFormValues } from '@/schemas/profileSchema'
 import { getPrimaryRole, getUserInitials } from '@/utils/userDisplay'
 
 export function ProfilePage() {
+  const { t } = useStaffTranslation()
   const dispatch = useAppDispatch()
   const user = useAppSelector(selectCurrentUser)
   const loginData = useAppSelector(selectLoginData)
@@ -39,24 +41,24 @@ export function ProfilePage() {
 
   const onSubmit = (values: ProfileFormValues) => {
     dispatch(updateProfile(values))
-    setSuccessMessage('Profile updated successfully.')
+    setSuccessMessage(t('Profile updated successfully.'))
     reset(values)
   }
 
   const profileRows = [
-    ['User ID', loginData?._id ?? user?.id ?? '-'],
-    ['Phone', loginData?.phone ?? '-'],
-    ['Role', getPrimaryRole(user)],
-    ['Status', loginData?.isActive === false ? 'Inactive' : 'Active'],
-    ['Email verification', loginData?.isEmailVerified ? 'Verified' : 'Pending'],
+    [t('User ID'), loginData?._id ?? user?.id ?? '-'],
+    [t('Phone'), loginData?.phone ?? '-'],
+    [t('Role'), getPrimaryRole(user)],
+    [t('Status'), loginData?.isActive === false ? t('Inactive') : t('Active')],
+    [t('Email verification'), loginData?.isEmailVerified ? t('Verified') : t('Pending')],
   ]
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <PageHeader
-        eyebrow="Profile"
-        title="My profile"
-        description="Review your account details and update the profile used in this session."
+        eyebrow={t('Profile')}
+        title={t('My profile')}
+        description={t('Review your account details and update the profile used in this session.')}
       />
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,21rem)_minmax(0,1fr)]">
@@ -66,10 +68,10 @@ export function ProfilePage() {
               {getUserInitials(user)}
             </div>
             <h2 className="mt-4 truncate text-xl font-semibold text-[var(--color-text-strong)]">
-              {user?.name ?? 'Signed in'}
+              {user?.name ?? t('Signed in')}
             </h2>
             <p className="mt-1 break-all text-sm text-[var(--color-text-muted)]">
-              {user?.email ?? 'No email available'}
+              {user?.email ?? t('No email available')}
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               <span className="inline-flex rounded-lg bg-[var(--color-primary-soft)] px-3 py-1 text-sm font-medium text-[var(--color-primary)]">
@@ -82,7 +84,7 @@ export function ProfilePage() {
                     : 'inline-flex rounded-lg bg-[var(--color-surface-muted)] px-3 py-1 text-sm font-medium text-[var(--color-text-muted)]'
                 }
               >
-                {loginData?.isEmailVerified ? 'Verified' : 'Pending verification'}
+                {loginData?.isEmailVerified ? t('Verified') : t('Pending verification')}
               </span>
             </div>
           </div>
@@ -104,9 +106,9 @@ export function ProfilePage() {
 
         <section className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
           <div className="border-b border-[var(--color-border)] pb-5">
-            <h2 className="text-lg font-semibold text-[var(--color-text-strong)]">Edit profile</h2>
+            <h2 className="text-lg font-semibold text-[var(--color-text-strong)]">{t('Edit profile')}</h2>
             <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-              These details are used for the current signed-in session.
+              {t('These details are used for the current signed-in session.')}
             </p>
           </div>
 
@@ -119,15 +121,15 @@ export function ProfilePage() {
               <FormInputText
                 control={control}
                 name="name"
-                label="Name"
-                placeholder="Your name"
+                label={t('Name')}
+                placeholder={t('Your name')}
                 autoComplete="name"
               />
               <FormInputText
                 control={control}
                 name="email"
-                label="Email"
-                placeholder="you@example.com"
+                label={t('Email')}
+                placeholder={t('you@example.com')}
                 autoComplete="email"
               />
             </div>
@@ -135,7 +137,7 @@ export function ProfilePage() {
             <div className="flex justify-end border-t border-[var(--color-border)] pt-6">
               <Button
                 type="submit"
-                label="Update profile"
+                label={t('Update profile')}
                 icon="pi pi-check"
                 disabled={!isDirty}
                 loading={isSubmitting}

@@ -30,6 +30,7 @@ import { FormMultiSelect } from '@/components/forms/FormMultiSelect'
 import { FormMediaInput } from '@/components/forms/FormMediaInput'
 import { FormVideoInput } from '@/components/forms/FormVideoInput'
 import { cn } from '@/utils/classNames'
+import { useStaffTranslation } from '@/i18n/useTranslation'
 import type { CrudFormConfig, CrudFormField, CrudFormMode } from '@/types/crud'
 
 interface CommonFormProps<TValues extends FieldValues> {
@@ -61,6 +62,7 @@ export function CommonForm<TValues extends FieldValues>({
   onSubmit,
   onCancel,
 }: CommonFormProps<TValues>) {
+  const { t } = useStaffTranslation()
   const {
     control,
     getValues,
@@ -348,9 +350,9 @@ export function CommonForm<TValues extends FieldValues>({
             key={fieldKey}
             {...sharedProps}
             accept={fieldConfig.upload?.accept}
-            chooseLabel={fieldConfig.upload?.chooseLabel ?? 'Add Images (up to 10)'}
+            chooseLabel={fieldConfig.upload?.chooseLabel ?? t('staff.crud.addImagesUpTo10')}
             clearLabel={fieldConfig.upload?.clearLabel}
-            emptyMessage={fieldConfig.upload?.emptyMessage ?? 'No images uploaded yet.'}
+            emptyMessage={fieldConfig.upload?.emptyMessage ?? t('staff.crud.noImagesUploaded')}
             folder={fieldConfig.upload?.folder}
             multiple={true}
           />
@@ -556,15 +558,15 @@ export function CommonForm<TValues extends FieldValues>({
       <div className="flex-1 overflow-y-auto px-1 pb-4 pt-1">
         {submitCount > 0 && Object.keys(errors).length > 0 && (
           <div className="mb-4 rounded-lg bg-red-50 p-3 border border-red-200">
-            <p className="text-sm font-bold text-red-700 mb-1">Please fix the following errors:</p>
+            <p className="text-sm font-bold text-red-700 mb-1">{t('staff.crud.pleaseFixErrors')}</p>
             <ul className="list-disc list-inside text-xs text-red-600">
               {Object.entries(errors).map(([key, err]: [string, any]) => (
                 <li key={key}>
-                  <span className="font-semibold">{key}:</span> {err?.message || (typeof err === 'object' ? 'Invalid value' : String(err))}
+                  <span className="font-semibold">{key}:</span> {err?.message || (typeof err === 'object' ? t('staff.crud.invalidValue') : String(err))}
                   {err && typeof err === 'object' && !err.message && Object.keys(err).length > 0 && (
                     <ul className="ml-4 list-circle">
                       {Object.entries(err).map(([subKey, subErr]: [string, any]) => (
-                        <li key={subKey}><span className="font-semibold">{subKey}:</span> {subErr?.message || 'Invalid'}</li>
+                        <li key={subKey}><span className="font-semibold">{subKey}:</span> {subErr?.message || t('staff.crud.invalid')}</li>
                       ))}
                     </ul>
                   )}
@@ -600,7 +602,7 @@ export function CommonForm<TValues extends FieldValues>({
       <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-[var(--color-border)] px-1 pt-4 sm:flex-row sm:justify-end">
         <Button
           type="button"
-          label="Cancel"
+          label={t('staff.crud.cancel')}
           severity="secondary"
           outlined
           className="min-w-28"
@@ -619,6 +621,7 @@ export function CommonForm<TValues extends FieldValues>({
 }
 
 function InfoScenarioCard({ label, text }: { label: string; text: string }) {
+  const { t } = useStaffTranslation()
   const [copied, setCopied] = useState(false)
 
   const handleCopy = async () => {
@@ -650,7 +653,7 @@ function InfoScenarioCard({ label, text }: { label: string; text: string }) {
           {copied
             ? <Check className="h-3 w-3 text-green-500" />
             : <Copy className="h-3 w-3" />}
-          {copied ? 'Copied' : 'Copy'}
+          {copied ? t('staff.crud.copied') : t('staff.crud.copy')}
         </button>
       </div>
       <p className="text-[11px] leading-5 text-[var(--color-text-muted)] bg-[var(--color-surface-muted)] rounded px-2 py-1.5">

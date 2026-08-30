@@ -1,17 +1,19 @@
+import { useMemo } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import type { Location } from 'react-router-dom'
 import { Button } from 'primereact/button'
 import { Message } from 'primereact/message'
+import { z } from 'zod'
 import { FormCheckbox } from '@/components/forms/FormCheckbox'
 import { FormInputText } from '@/components/forms/FormInputText'
 import { FormPassword } from '@/components/forms/FormPassword'
 import { clearAuthError, selectAuthError, setCredentials } from '@/features/auth/authSlice'
 import { useLoginMutation } from '@/features/auth/services/authApi'
+import { useStaffTranslation } from '@/i18n/useTranslation'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { useToast } from '@/hooks/useToast'
-import { loginSchema } from '@/schemas/authSchema'
 import type { LoginFormValues } from '@/schemas/authSchema'
 import { getApiErrorMessage } from '@/services/api/apiError'
 import { toAuthSession } from '@/utils/authSession'
@@ -108,12 +110,22 @@ export function LoginForm() {
   const location = useLocation()
   const authError = useAppSelector(selectAuthError)
   const [login, { error, isLoading }] = useLoginMutation()
+  const { t } = useStaffTranslation()
+  const localizedLoginSchema = useMemo(
+    () =>
+      z.object({
+        email: z.string().trim().email(t('login.errorInvalidEmail')),
+        password: z.string().min(8, t('login.errorPasswordMin')),
+        rememberMe: z.boolean(),
+      }),
+    [t],
+  )
   const {
     control,
     handleSubmit,
     formState: { isSubmitting },
   } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(localizedLoginSchema),
     defaultValues: getLoginDefaultValues(),
     mode: 'onBlur',
   })
@@ -129,17 +141,17 @@ export function LoginForm() {
       const response = await login(values).unwrap()
 
       applyRememberMePreference(values)
-      dispatch(setCredentials(toAuthSession(response)))
+      dispatch(setCredentials(toAuthSession(response, 'staff')))
       showToast({
         severity: 'success',
-        summary: response.respMessage ?? 'Login successful',
-        detail: 'Welcome back.',
+        summary: response.respMessage ?? t('login.loginSuccessTitle'),
+        detail: t('login.loginSuccessDetail'),
       })
       navigate(redirectTo, { replace: true })
     } catch (submitError) {
       showToast({
         severity: 'error',
-        summary: 'Login failed',
+        summary: t('login.loginFailedTitle'),
         detail: getApiErrorMessage(submitError),
       })
     }
@@ -152,15 +164,15 @@ export function LoginForm() {
       <FormInputText
         control={control}
         name="email"
-        label="Email"
-        placeholder="you@example.com"
+        label={t('login.emailLabel')}
+        placeholder={t('login.emailPlaceholder')}
         autoComplete="email"
       />
       <FormPassword
         control={control}
         name="password"
-        label="Password"
-        placeholder="Enter your password"
+        label={t('login.passwordLabel')}
+        placeholder={t('login.passwordPlaceholder')}
         autoComplete="current-password"
       />
 
@@ -168,17 +180,17 @@ export function LoginForm() {
         <FormCheckbox
           control={control}
           name="rememberMe"
-          label="Remember me"
+          label={t('login.rememberMe')}
           compact
         />
         <Link to="/forgot-password" className="text-sm font-medium text-[var(--color-primary)] hover:text-[var(--color-primary-hover)]">
-          Forgot password?
+          {t('login.forgotPassword')}
         </Link>
       </div>
 
       <Button
         type="submit"
-        label="Sign in"
+        label={isLoading || isSubmitting ? t('login.signingIn') : t('login.signIn')}
         icon="pi pi-arrow-right"
         iconPos="right"
         loading={isLoading || isSubmitting}

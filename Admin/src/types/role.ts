@@ -2,7 +2,7 @@ import type { CrudPermissionAction, CrudPermissionsValue } from './crud'
 
 export type RoleStatus = 'Active' | 'Inactive' | 'Pending'
 
-export type RoleType = 'User' | 'Manager' | 'Admin' | 'Super Admin'
+export type RoleType = 'User' | 'Manager' | 'Admin' | 'Super Admin' | 'Guest'
 
 export interface RolePermissionPayloadEntry {
   type: 'NoView' | 'View' | 'Edit'

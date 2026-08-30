@@ -1,14 +1,15 @@
 import { useMemo } from 'react'
 import { CrudPage } from '@/components/crud/CrudPage'
+import { useStaffTranslation } from '@/i18n/useTranslation'
 import type { CrudPageConfig } from '@/types/crud'
 import {
   createUserFormConfig,
   createUserTableColumns,
+  getRenderUserDetails,
+  getRenderUserGridItem,
   mapUserFormToCreatePayload,
   mapUserFormToUpdatePayload,
   mapUserToFormValues,
-  renderUserDetails,
-  renderUserGridItem,
 } from '@/models/userModel'
 import {
   useBulkDeleteUsersMutation,
@@ -34,6 +35,8 @@ export function UsersPage() {
     selectedIds: EntityId[]
   }
 
+  const { t } = useStaffTranslation()
+
   const rolesQuery = useGetRolesQuery(rolesListQuery)
   const roleOptions = useMemo(
     () =>
@@ -44,11 +47,11 @@ export function UsersPage() {
     [rolesQuery.data],
   )
   const roleFieldHelperText = rolesQuery.isError
-    ? 'Unable to load roles.'
+    ? t('Unable to load roles.')
     : rolesQuery.isLoading
-      ? 'Loading roles...'
+      ? t('Loading roles...')
       : !roleOptions.length
-        ? 'No roles available.'
+        ? t('No roles available.')
         : undefined
   const isRoleFieldDisabled = rolesQuery.isLoading || rolesQuery.isError || roleOptions.length === 0
 
@@ -61,13 +64,13 @@ export function UsersPage() {
   > =
     useMemo(
       () => ({
-        title: 'Users',
-        resourceName: 'User',
-        createButtonLabel: 'Add Users',
-        createDialogTitle: 'Add User',
-        editDialogTitle: 'Edit user',
-        viewDialogTitle: 'User details',
-        emptyMessage: 'No users found.',
+        title: t('Users'),
+        resourceName: t('User'),
+        createButtonLabel: t('Add Users'),
+        createDialogTitle: t('Add User'),
+        editDialogTitle: t('Edit user'),
+        viewDialogTitle: t('User details'),
+        emptyMessage: t('No users found.'),
         pageSizeOptions: [10, 20, 50],
         defaultQuery: {
           page: 1,
@@ -82,9 +85,9 @@ export function UsersPage() {
         getRowId: (user) => user._id,
         getRowLabel: (user) => `${user.firstName} ${user.lastName}`,
         table: {
-          columns: createUserTableColumns(roleOptions),
+          columns: createUserTableColumns(t, roleOptions),
         },
-        form: createUserFormConfig(roleOptions, {
+        form: createUserFormConfig(t, roleOptions, {
           disabled: isRoleFieldDisabled,
           helperText: roleFieldHelperText,
         }),
@@ -99,27 +102,34 @@ export function UsersPage() {
         mapFormValuesToCreatePayload: mapUserFormToCreatePayload,
         mapFormValuesToUpdatePayload: mapUserFormToUpdatePayload,
         bulkDelete: {
-          buttonLabel: 'Delete Selected',
-          confirmTitle: 'Delete selected users?',
-          confirmLabel: 'Delete Selected',
+          buttonLabel: t('staff.crud.deleteSelected'),
+          confirmTitle: t('Delete selected users?'),
+          confirmLabel: t('staff.crud.deleteSelected'),
           confirmMessage: (users) =>
-            `This will permanently delete ${users.length} selected ${
-              users.length === 1 ? 'user' : 'users'
-            }.`,
+            t('staff.crud.deleteSelectedMessage', {
+              count: users.length,
+              resource: users.length === 1 ? t('User') : t('Users'),
+            }),
           successMessage: (users) =>
-            `${users.length} ${users.length === 1 ? 'user' : 'users'} deleted successfully.`,
+            t('staff.crud.bulkDeletedSuccess', {
+              count: users.length,
+              resource: users.length === 1 ? t('User') : t('Users'),
+            }),
           mapSelectedItemsToPayload: (users) => ({
             selectedIds: users.map((user) => user._id),
           }),
         },
         deleteDialogMessage: (user) =>
-          `This will permanently delete ${user.firstName} ${user.lastName} (${user.email}).`,
+          t('This will permanently delete {{name}} ({{email}}).', {
+            name: `${user.firstName} ${user.lastName}`,
+            email: user.email,
+          }),
         slots: {
-          viewContent: (user) => renderUserDetails(user, roleOptions),
-          gridItem: (user) => renderUserGridItem(user, roleOptions),
+          viewContent: getRenderUserDetails(t, roleOptions),
+          gridItem: getRenderUserGridItem(t, roleOptions),
         },
       }),
-      [isRoleFieldDisabled, roleFieldHelperText, roleOptions],
+      [t, isRoleFieldDisabled, roleFieldHelperText, roleOptions],
     )
 
   return <CrudPage config={usersCrudConfig} />

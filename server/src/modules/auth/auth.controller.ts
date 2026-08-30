@@ -4,6 +4,7 @@ import { authService } from './auth.service';
 import respUtil from '../../utils/resp.util';
 import serviceUtil from '../../utils/service.util';
 import { HTTP_STATUS } from '../../constants/httpStatus.constants';
+import { t } from '../../i18n';
 
 export const authController = {
   async register(req: Request, res: Response) {
@@ -25,6 +26,32 @@ export const authController = {
     
     await serviceUtil.addActivity(req, 'Auth', 'Login', `${user.firstName} ${user.lastName} logged in successfully`, 'loginSuccess');
     
+    return res.json(respUtil.loginSuccessResponse(req));
+  },
+
+  async requestOtp(req: Request, res: Response) {
+    const result = await authService.requestOtp(req.body.phone, req.locale || 'en');
+    return res.json({
+      success: true,
+      statusCode: HTTP_STATUS.OK,
+      respMessage: t('auth.otp.sent', {}, req.locale || 'en'),
+      data: result,
+    });
+  },
+
+  async verifyOtp(req: Request, res: Response) {
+    const { user, accessToken, refreshToken } = await authService.verifyOtp(
+      req.body.phone,
+      req.body.otp,
+      req.locale || 'en'
+    );
+    req.entityType = 'user';
+    req.user = user;
+    req.token = { accessToken, refreshToken };
+    req.i18nKey = 'auth.otp.loginSuccess';
+
+    await serviceUtil.addActivity(req, 'Auth', 'Login', `${user.firstName} ${user.lastName} logged in via OTP`, 'loginSuccess');
+
     return res.json(respUtil.loginSuccessResponse(req));
   },
 

@@ -18,6 +18,7 @@ import { selectCurrentUser } from '@/features/auth/authSlice'
 import { useCrudTableViews } from '@/features/tableViews/useCrudTableViews'
 import { useAppSelector } from '@/hooks/redux'
 import { useToast } from '@/hooks/useToast'
+import { useStaffTranslation } from '@/i18n/useTranslation'
 import { getApiErrorMessage } from '@/services/api/apiError'
 import { formatDateTime } from '@/utils/date'
 import type { EntityId } from '@/types/common'
@@ -202,7 +203,7 @@ function hasCreatedColumn<TItem>(columns: Array<CrudTableColumn<TItem>>) {
   })
 }
 
-function withCreatedColumn<TItem>(columns: Array<CrudTableColumn<TItem>>, enabled: boolean) {
+function withCreatedColumn<TItem>(columns: Array<CrudTableColumn<TItem>>, enabled: boolean, createdLabel: string) {
   if (!enabled || hasCreatedColumn(columns)) {
     return columns
   }
@@ -211,7 +212,7 @@ function withCreatedColumn<TItem>(columns: Array<CrudTableColumn<TItem>>, enable
     ...columns,
     {
       key: 'created',
-      header: 'Created',
+      header: createdLabel,
       sortField: 'created',
       sortable: true,
       exportValue: (item: TItem) => formatDateTime(getCreatedValue(item) as string | Date | null | undefined),
@@ -235,6 +236,9 @@ function isNumberLikeField(fieldName: string) {
 function inferMarkedColumnFilter<TItem, TValues extends FieldValues>(
   column: CrudTableColumn<TItem>,
   formFields: Array<CrudFormField<TValues>>,
+  filterPrefix: string,
+  yesLabel: string,
+  noLabel: string,
 ): CrudTableColumn<TItem>['filter'] | undefined {
   if (column.filter) {
     return column.filter
@@ -254,7 +258,7 @@ function inferMarkedColumnFilter<TItem, TValues extends FieldValues>(
   const options = getStaticOptions(formField)
   const base = {
     key: fieldName,
-    placeholder: `Filter ${column.header}`,
+    placeholder: `${filterPrefix} ${column.header}`,
   }
 
   if (formField?.type === 'date' || formField?.type === 'time' || isDateLikeField(fieldName)) {
@@ -271,8 +275,8 @@ function inferMarkedColumnFilter<TItem, TValues extends FieldValues>(
       input: 'select',
       type: 'eq',
       options: options ?? [
-        { label: 'Yes', value: true },
-        { label: 'No', value: false },
+        { label: yesLabel, value: true },
+        { label: noLabel, value: false },
       ],
     }
   }
@@ -291,10 +295,13 @@ function inferMarkedColumnFilter<TItem, TValues extends FieldValues>(
 function withMarkedFilters<TItem, TValues extends FieldValues>(
   columns: Array<CrudTableColumn<TItem>>,
   formFields: Array<CrudFormField<TValues>>,
+  filterPrefix: string,
+  yesLabel: string,
+  noLabel: string,
 ) {
   return columns.map((column) => ({
     ...column,
-    filter: inferMarkedColumnFilter(column, formFields),
+    filter: inferMarkedColumnFilter(column, formFields, filterPrefix, yesLabel, noLabel),
   }))
 }
 
@@ -349,6 +356,7 @@ export function CrudPage<
   const previousRowActionsRef = useRef(config.slots?.rowActions)
   const [viewMode, setViewMode] = useState<CrudViewMode>(config.defaultViewMode ?? 'list')
   const { showToast } = useToast()
+  const { t } = useStaffTranslation()
   const currentUser = useAppSelector(selectCurrentUser)
   const useRcmCreatedSort = isRcmCrudModule(config.permissions?.module)
   const [query, setQuery] = useState<CrudListQuery>(() => ({
@@ -370,7 +378,7 @@ export function CrudPage<
     (routeSearchParams.get('dashboardQueue')?.trim() ? '/rcm/dashboard' : '')
   const dashboardReturnLabel =
     routeSearchParams.get('returnLabel')?.trim() ||
-    (routeSearchParams.get('dashboardQueue')?.trim() ? 'Back to Dashboard' : 'Back')
+    (routeSearchParams.get('dashboardQueue')?.trim() ? t('staff.crud.backToDashboard') : t('staff.crud.back'))
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -441,21 +449,27 @@ export function CrudPage<
         ? [{
             key: 'actions' as const,
             tableViewId: 'actions',
-            header: 'Actions',
+            header: t('staff.crud.actions'),
             hideable: true,
             reorderable: false,
             defaultVisible: true,
             exportable: false,
           } as CrudTableColumn<TItem>]
         : [] as CrudTableColumn<TItem>[],
-    [hasRowActions],
+    [hasRowActions, t],
   )
   const tableColumns = useMemo(
     () => [
-      ...withMarkedFilters(withCreatedColumn(config.table.columns, useRcmCreatedSort), config.form.fields),
+      ...withMarkedFilters(
+        withCreatedColumn(config.table.columns, useRcmCreatedSort, t('staff.crud.created')),
+        config.form.fields,
+        t('staff.crud.filterPrefix'),
+        t('staff.crud.yes'),
+        t('staff.crud.no'),
+      ),
       ...actionsColumn,
     ],
-    [actionsColumn, config.form.fields, config.table.columns, useRcmCreatedSort],
+    [actionsColumn, config.form.fields, config.table.columns, useRcmCreatedSort, t],
   )
   const resolvedTableId = useMemo(
     () => config.table.tableId ?? config.permissions?.module ?? location.pathname,
@@ -482,11 +496,11 @@ export function CrudPage<
     if (listError) {
       showToast({
         severity: 'error',
-        summary: 'Error',
+        summary: t('staff.crud.errorTitle'),
         detail: getApiErrorMessage(listError),
       })
     }
-  }, [listError, showToast])
+  }, [listError, showToast, t])
 
   useEffect(() => {
     if (previousTableColumnsRef.current === config.table.columns) {
@@ -539,8 +553,8 @@ export function CrudPage<
         }).unwrap()
         showToast({
           severity: 'success',
-          summary: 'Success',
-          detail: `${config.getRowLabel(selectedItem)} updated successfully.`,
+          summary: t('staff.crud.successTitle'),
+          detail: t('staff.crud.updatedSuccess', { label: config.getRowLabel(selectedItem) }),
         })
         closeDialog()
         return
@@ -549,14 +563,14 @@ export function CrudPage<
       const createdItem = await createItem(config.mapFormValuesToCreatePayload(values)).unwrap()
       showToast({
         severity: 'success',
-        summary: 'Success',
-        detail: `${config.getRowLabel(createdItem)} created successfully.`,
+        summary: t('staff.crud.successTitle'),
+        detail: t('staff.crud.createdSuccess', { label: config.getRowLabel(createdItem) }),
       })
       closeDialog()
     } catch (error) {
       showToast({
         severity: 'error',
-        summary: 'Error',
+        summary: t('staff.crud.errorTitle'),
         detail: getApiErrorMessage(error),
       })
     }
@@ -571,8 +585,8 @@ export function CrudPage<
       await deleteItem(deleteItemId).unwrap()
       showToast({
         severity: 'success',
-        summary: 'Success',
-        detail: 'Record deleted successfully.',
+        summary: t('staff.crud.successTitle'),
+        detail: t('staff.crud.deletedSuccess'),
       })
       setSelectedItems((currentItems) =>
         currentItems.filter((item) => config.getRowId(item) !== deleteItemId),
@@ -581,7 +595,7 @@ export function CrudPage<
     } catch (error) {
       showToast({
         severity: 'error',
-        summary: 'Error',
+        summary: t('staff.crud.errorTitle'),
         detail: getApiErrorMessage(error),
       })
     }
@@ -596,16 +610,19 @@ export function CrudPage<
       await bulkDeleteItems(config.bulkDelete.mapSelectedItemsToPayload(selectedItems)).unwrap()
       showToast({
         severity: 'success',
-        summary: 'Success',
+        summary: t('staff.crud.successTitle'),
         detail: config.bulkDelete.successMessage?.(selectedItems) ??
-          `${selectedItems.length} ${selectedItems.length === 1 ? resourceName : `${resourceName}s`} deleted successfully.`,
+          t('staff.crud.bulkDeletedSuccess', {
+            count: selectedItems.length,
+            resource: selectedItems.length === 1 ? resourceName : `${resourceName}s`,
+          }),
       })
       setSelectedItems([])
       setIsBulkDeleteDialogOpen(false)
     } catch (error) {
       showToast({
         severity: 'error',
-        summary: 'Error',
+        summary: t('staff.crud.errorTitle'),
         detail: getApiErrorMessage(error),
       })
     }
@@ -687,8 +704,9 @@ export function CrudPage<
     ...(canViewPage
       ? [
         {
-          label: `View ${resourceName}`,
+          label: `${t('staff.crud.view')} ${resourceName}`,
           icon: <Eye className="h-4 w-4" aria-hidden="true" />,
+          kind: 'view' as const,
           onClick: openViewDialog,
         },
       ]
@@ -696,8 +714,9 @@ export function CrudPage<
     ...(canUpdate
       ? [
         {
-          label: `Edit ${resourceName}`,
+          label: `${t('staff.crud.edit')} ${resourceName}`,
           icon: <Pencil className="h-4 w-4" aria-hidden="true" />,
+          kind: 'edit' as const,
           onClick: openEditDialog,
         },
       ]
@@ -705,9 +724,10 @@ export function CrudPage<
     ...(canDelete
       ? [
         {
-          label: `Delete ${resourceName}`,
+          label: `${t('staff.crud.delete')} ${resourceName}`,
           icon: <Trash2 className="h-4 w-4" aria-hidden="true" />,
           tone: 'danger' as const,
+          kind: 'delete' as const,
           onClick: openDeleteDialog,
         },
       ]
@@ -784,7 +804,7 @@ export function CrudPage<
             ) : null}
           </div>
           <p className="mt-1 text-sm text-[var(--color-text-muted)]">
-            {totalRecords} total {config.title}
+            {t('staff.crud.totalRecords', { count: totalRecords, title: config.title })}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
@@ -793,7 +813,7 @@ export function CrudPage<
             <InputText
               value={globalSearchValue}
               onChange={(e) => setGlobalSearchValue(e.target.value)}
-              placeholder="Search..."
+              placeholder={t('staff.crud.search')}
               className="crud-global-search-input h-8 w-48 text-xs"
             />
           </div>
@@ -801,7 +821,7 @@ export function CrudPage<
           {hasFilters ? (
             <Button
               type="button"
-              label="Clear Filters"
+              label={t('staff.crud.clearFilters')}
               icon={<FilterX className="h-3.5 w-3.5" />}
               severity="danger"
               text
@@ -847,7 +867,7 @@ export function CrudPage<
           {canBulkDelete && selectedItems.length ? (
             <Button
               type="button"
-              label={`${config.bulkDelete?.buttonLabel ?? 'Delete Selected'} (${selectedItems.length})`}
+              label={`${config.bulkDelete?.buttonLabel ?? t('staff.crud.deleteSelected')} (${selectedItems.length})`}
               icon={<Trash2 className="h-3.5 w-3.5" />}
               severity="danger"
               outlined
@@ -858,7 +878,7 @@ export function CrudPage<
 
           <Button
             type="button"
-            label="Bulk Upload"
+            label={t('staff.crud.bulkUpload')}
             icon={<Upload className="h-3.5 w-3.5" />}
             severity="secondary"
             outlined
@@ -867,7 +887,7 @@ export function CrudPage<
           />
           <Button
             type="button"
-            label="Export"
+            label={t('staff.crud.export')}
             icon={<Download className="h-3.5 w-3.5" />}
             severity="secondary"
             outlined
@@ -879,7 +899,7 @@ export function CrudPage<
           {canCreate && config.showCreateButton !== false ? (
             <Button
               type="button"
-              label={config.createButtonLabel ?? `Add ${resourceName}`}
+              label={config.createButtonLabel ?? `${t('staff.crud.add')} ${resourceName}`}
               icon={<Plus className="h-4 w-4" />}
               className="flex items-center gap-1 h-8 px-4 text-xs font-bold"
               onClick={openCreateDialog}
@@ -954,7 +974,7 @@ export function CrudPage<
             totalRecords={totalRecords}
             rowsPerPageOptions={pageSizeOptions}
             template="CurrentPageReport RowsPerPageDropdown"
-            currentPageReportTemplate="Showing {first}-{last} of {totalRecords}"
+            currentPageReportTemplate={t('staff.crud.showingRange')}
             className="compact-paginator"
             onPageChange={handlePageChange}
           />
@@ -973,7 +993,7 @@ export function CrudPage<
 
       <Dialog
         visible={mode === 'create' || mode === 'edit'}
-        header={mode === 'edit' ? config.editDialogTitle ?? 'Edit record' : config.createDialogTitle ?? 'Create record'}
+        header={mode === 'edit' ? config.editDialogTitle ?? t('staff.crud.dialogEditTitle') : config.createDialogTitle ?? t('staff.crud.dialogCreateTitle')}
         modal
         blockScroll
         draggable={false}
@@ -987,7 +1007,7 @@ export function CrudPage<
           config={config.form}
           mode={mode === 'edit' ? 'edit' : 'create'}
           initialValues={selectedItem ? config.mapItemToFormValues(selectedItem) : null}
-          submitLabel={mode === 'edit' ? 'Save changes' : 'Create'}
+          submitLabel={mode === 'edit' ? t('staff.crud.saveChanges') : t('staff.crud.create')}
           isSubmitting={createState.isLoading || updateState.isLoading}
           datePickerDisplayMode="inline"
           onCancel={closeDialog}
@@ -997,7 +1017,7 @@ export function CrudPage<
 
       <Dialog
         visible={mode === 'view'}
-        header={config.viewDialogTitle ?? 'View record'}
+        header={config.viewDialogTitle ?? t('staff.crud.dialogViewTitle')}
         modal
         blockScroll
         draggable={false}
@@ -1015,15 +1035,15 @@ export function CrudPage<
 
       <ConfirmationDialog
         open={deleteItemId !== null}
-        title={config.deleteDialogTitle ?? 'Delete record?'}
+        title={config.deleteDialogTitle ?? t('staff.crud.deleteRecordTitle')}
         message={
           activeDeleteItem
             ? config.deleteDialogMessage?.(activeDeleteItem) ??
-            `This will permanently delete ${config.getRowLabel(activeDeleteItem)}.`
-            : 'This will permanently delete this record.'
+            t('staff.crud.deleteRecordMessage', { label: config.getRowLabel(activeDeleteItem) })
+            : t('staff.crud.deleteRecordFallbackMessage')
         }
-        confirmLabel="Delete"
-        cancelLabel="Cancel"
+        confirmLabel={t('staff.crud.delete')}
+        cancelLabel={t('staff.crud.cancel')}
         tone="danger"
         confirmLoading={deleteState.isLoading}
         onClose={() => setDeleteItemId(null)}
@@ -1032,14 +1052,16 @@ export function CrudPage<
 
       <ConfirmationDialog
         open={isBulkDeleteDialogOpen}
-        title={config.bulkDelete?.confirmTitle ?? 'Delete selected records?'}
+        title={config.bulkDelete?.confirmTitle ?? t('staff.crud.deleteSelectedRecordsTitle')}
         message={
           config.bulkDelete?.confirmMessage?.(selectedItems) ??
-          `This will permanently delete ${selectedItems.length} selected ${selectedItems.length === 1 ? resourceName : `${resourceName}s`
-          }.`
+          t('staff.crud.deleteSelectedMessage', {
+            count: selectedItems.length,
+            resource: selectedItems.length === 1 ? resourceName : `${resourceName}s`,
+          })
         }
-        confirmLabel={config.bulkDelete?.confirmLabel ?? 'Delete Selected'}
-        cancelLabel="Cancel"
+        confirmLabel={config.bulkDelete?.confirmLabel ?? t('staff.crud.deleteSelected')}
+        cancelLabel={t('staff.crud.cancel')}
         tone="danger"
         confirmLoading={bulkDeleteState.isLoading}
         onClose={() => setIsBulkDeleteDialogOpen(false)}

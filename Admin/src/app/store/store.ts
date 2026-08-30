@@ -19,6 +19,7 @@ import {
   registerAuthHttpErrorHandler,
   setAuthSnapshotResolver,
 } from '@/services/api/authSessionBridge'
+import { setLocaleSnapshotResolver } from '@/services/api/localeSessionBridge'
 import { menusApi } from '@/services/api/endpoints/menusApi'
 
 const listenerMiddleware = createListenerMiddleware()
@@ -67,6 +68,15 @@ setAuthSnapshotResolver(() => {
     accessToken: state.auth.accessToken,
     expiresAt: state.auth.expiresAt,
     isAuthenticated: selectIsAuthenticated(state),
+  }
+})
+
+setLocaleSnapshotResolver(() => {
+  const state = store.getState()
+
+  return {
+    staffLocale: state.preferences.staffLocale ?? 'en',
+    devoteeLocale: state.preferences.devoteeLocale ?? 'en',
   }
 })
 

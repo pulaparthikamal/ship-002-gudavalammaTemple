@@ -22,8 +22,14 @@ export interface IUser extends BaseDocument {
   updatedByName?: string;
   listPreferences?: ObjectIdType;
   isTwoFactorAuthentication: boolean;
+  /** Repurposed for devotee mobile-number OTP login (Phase 18) — holds a
+   * SHA-256 hash of the current one-time code, never the plaintext. See
+   * auth.service.ts's requestOtp/verifyOtp. */
   otp?: string;
   otpExpires?: Date;
+  /** Failed verify attempts against the current `otp` — locks out after a
+   * few tries rather than allowing unlimited guesses within the TTL window. */
+  otpAttempts?: number;
   isRemember: boolean;
   isRememberLogin?: Date;
   enableTwoFactAuth: boolean;
@@ -36,6 +42,7 @@ export interface IUser extends BaseDocument {
   phone?: string;
   isDeleted: boolean;
   deletedAt?: Date;
+  preferredLocale?: 'en' | 'te' | 'hi';
 
   // Methods
   authenticate(password: string): boolean;
@@ -70,6 +77,7 @@ const userSchema = new Schema<IUser, IUserModel>(
     isTwoFactorAuthentication: { type: Boolean, default: false },
     otp: { type: String },
     otpExpires: { type: Date },
+    otpAttempts: { type: Number, default: 0 },
     isRemember: { type: Boolean, default: false },
     isRememberLogin: { type: Date },
     enableTwoFactAuth: { type: Boolean, default: true },
@@ -82,6 +90,7 @@ const userSchema = new Schema<IUser, IUserModel>(
     phone: { type: String },
     isDeleted: { type: Boolean, default: false },
     deletedAt: { type: Date },
+    preferredLocale: { type: String, enum: ['en', 'te', 'hi'], default: 'en' },
   },
   {
     timestamps: false,

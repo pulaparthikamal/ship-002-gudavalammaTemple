@@ -1,5 +1,13 @@
 export type AuthStatus = 'anonymous' | 'authenticated' | 'expired'
 
+/**
+ * Client-only discriminator (never sent to/received from the backend). The
+ * backend has a single User/Role model with no devotee/staff distinction, so
+ * this tags which portal a session was established through, letting the two
+ * portals' route guards stay mutually exclusive in one shared auth slice.
+ */
+export type AuthAudience = 'staff' | 'devotee'
+
 export interface AuthUser {
   id: string
   name: string
@@ -14,6 +22,7 @@ export interface AuthSession {
   expiresAt: number | null
   user: AuthUser
   loginData: LoginResponseUser | null
+  audience: AuthAudience
 }
 
 export interface AuthState {
@@ -24,11 +33,33 @@ export interface AuthState {
   loginData: LoginResponseUser | null
   status: AuthStatus
   error: string | null
+  audience: AuthAudience | null
 }
 
 export interface LoginRequest {
-  email: string
+  email?: string
+  phone?: string
   password: string
+}
+
+export interface RequestOtpRequest {
+  phone: string
+}
+
+export interface RequestOtpResponse {
+  success?: boolean
+  statusCode?: number
+  respMessage?: string
+  data?: {
+    phone: string
+    expiresInSeconds: number
+    deliveredVia: { email: boolean; whatsapp: boolean }
+  }
+}
+
+export interface VerifyOtpRequest {
+  phone: string
+  otp: string
 }
 
 export interface RegisterRequest {

@@ -7,6 +7,16 @@ export const authI18n = {
   register: {
     success: 'Registration successful',
     emailExists: 'Email is already registered',
+    phoneExists: 'Phone number is already registered',
+  },
+  otp: {
+    phoneNotFound: 'No account found with this phone number',
+    sent: 'A verification code has been sent',
+    tooSoon: 'Please wait before requesting another code',
+    invalid: 'Invalid or expired code',
+    expired: 'This code has expired. Please request a new one',
+    tooManyAttempts: 'Too many incorrect attempts. Please request a new code',
+    loginSuccess: 'Login successful',
   },
   token: {
     refreshSuccess: 'Token refreshed successfully',

@@ -11,9 +11,28 @@ export const registerSchema = z.object({
 });
 
 export const loginSchema = z.object({
+  body: z
+    .object({
+      email: z.string().email('Invalid email format').optional(),
+      phone: z.string().trim().min(8, 'Invalid phone number').optional(),
+      password: z.string().min(1, 'Password is required'),
+    })
+    .refine((data) => Boolean(data.email || data.phone), {
+      message: 'Email or phone number is required',
+      path: ['email'],
+    }),
+});
+
+export const requestOtpSchema = z.object({
   body: z.object({
-    email: z.string().email('Invalid email format'),
-    password: z.string().min(1, 'Password is required'),
+    phone: z.string().trim().min(8, 'Invalid phone number'),
+  }),
+});
+
+export const verifyOtpSchema = z.object({
+  body: z.object({
+    phone: z.string().trim().min(8, 'Invalid phone number'),
+    otp: z.string().trim().length(6, 'Enter the 6-digit code'),
   }),
 });
 

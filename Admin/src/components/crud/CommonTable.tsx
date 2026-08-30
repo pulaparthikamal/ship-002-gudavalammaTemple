@@ -13,6 +13,7 @@ import { Calendar } from 'primereact/calendar'
 import { MultiSelect } from 'primereact/multiselect'
 import { InputNumber } from 'primereact/inputnumber'
 import { cn } from '@/utils/classNames'
+import { useStaffTranslation } from '@/i18n/useTranslation'
 import type {
   CrudCriteriaType,
   CrudCriteriaValue,
@@ -54,39 +55,51 @@ interface FilterValueWithMode {
   matchMode?: CrudFilterMatchMode
 }
 
-const textFilterMatchModes: Array<{ label: string; value: CrudFilterMatchMode }> = [
-  { label: 'Starts with', value: 'startsWith' },
-  { label: 'Contains', value: 'contains' },
-  { label: 'Ends with', value: 'endsWith' },
-  { label: 'Equals', value: 'equals' },
-  { label: 'Not equals', value: 'notEquals' },
-]
+type TFn = (key: string, params?: Record<string, string | number>) => string
 
-const selectFilterMatchModes: Array<{ label: string; value: CrudFilterMatchMode }> = [
-  { label: 'Equals', value: 'equals' },
-  { label: 'Not equals', value: 'notEquals' },
-]
+function getTextFilterMatchModes(t: TFn): Array<{ label: string; value: CrudFilterMatchMode }> {
+  return [
+    { label: t('staff.crud.startsWith'), value: 'startsWith' },
+    { label: t('staff.crud.contains'), value: 'contains' },
+    { label: t('staff.crud.endsWith'), value: 'endsWith' },
+    { label: t('staff.crud.equals'), value: 'equals' },
+    { label: t('staff.crud.notEquals'), value: 'notEquals' },
+  ]
+}
 
-const multiSelectFilterMatchModes: Array<{ label: string; value: CrudFilterMatchMode }> = [
-  { label: 'In', value: 'in' },
-  { label: 'Not in', value: 'notIn' },
-]
+function getSelectFilterMatchModes(t: TFn): Array<{ label: string; value: CrudFilterMatchMode }> {
+  return [
+    { label: t('staff.crud.equals'), value: 'equals' },
+    { label: t('staff.crud.notEquals'), value: 'notEquals' },
+  ]
+}
 
-const dateFilterMatchModes: Array<{ label: string; value: CrudFilterMatchMode }> = [
-  { label: 'Date Is', value: 'dateIs' },
-  { label: 'Date Is Not', value: 'dateIsNot' },
-  { label: 'Date Before', value: 'dateBefore' },
-  { label: 'Date After', value: 'dateAfter' },
-]
+function getMultiSelectFilterMatchModes(t: TFn): Array<{ label: string; value: CrudFilterMatchMode }> {
+  return [
+    { label: t('staff.crud.inOp'), value: 'in' },
+    { label: t('staff.crud.notInOp'), value: 'notIn' },
+  ]
+}
 
-const numberFilterMatchModes: Array<{ label: string; value: CrudFilterMatchMode }> = [
-  { label: 'Equals', value: 'equals' },
-  { label: 'Not equals', value: 'notEquals' },
-  { label: 'Less than', value: 'lt' },
-  { label: 'Less than or equal', value: 'lte' },
-  { label: 'Greater than', value: 'gt' },
-  { label: 'Greater than or equal', value: 'gte' },
-]
+function getDateFilterMatchModes(t: TFn): Array<{ label: string; value: CrudFilterMatchMode }> {
+  return [
+    { label: t('staff.crud.dateIs'), value: 'dateIs' },
+    { label: t('staff.crud.dateIsNot'), value: 'dateIsNot' },
+    { label: t('staff.crud.dateBefore'), value: 'dateBefore' },
+    { label: t('staff.crud.dateAfter'), value: 'dateAfter' },
+  ]
+}
+
+function getNumberFilterMatchModes(t: TFn): Array<{ label: string; value: CrudFilterMatchMode }> {
+  return [
+    { label: t('staff.crud.equals'), value: 'equals' },
+    { label: t('staff.crud.notEquals'), value: 'notEquals' },
+    { label: t('staff.crud.lessThan'), value: 'lt' },
+    { label: t('staff.crud.lessThanOrEqual'), value: 'lte' },
+    { label: t('staff.crud.greaterThan'), value: 'gt' },
+    { label: t('staff.crud.greaterThanOrEqual'), value: 'gte' },
+  ]
+}
 
 function getColumnValue<TItem>(item: TItem, column: CrudTableColumn<TItem>) {
   const field = column.field ?? column.accessorKey
@@ -163,7 +176,13 @@ function getDefaultMatchMode<TItem>(column: CrudTableColumn<TItem>): CrudFilterM
   return 'contains'
 }
 
-function getFilterMatchModeOptions<TItem>(column: CrudTableColumn<TItem>) {
+function getFilterMatchModeOptions<TItem>(column: CrudTableColumn<TItem>, t: TFn) {
+  const textFilterMatchModes = getTextFilterMatchModes(t)
+  const selectFilterMatchModes = getSelectFilterMatchModes(t)
+  const multiSelectFilterMatchModes = getMultiSelectFilterMatchModes(t)
+  const dateFilterMatchModes = getDateFilterMatchModes(t)
+  const numberFilterMatchModes = getNumberFilterMatchModes(t)
+
   const sourceOptions =
     column.filter?.matchModes ??
     (column.filter?.input === 'multiSelect'
@@ -357,10 +376,24 @@ function areCriteriaEqual(firstCriteria: CrudListCriteria[], secondCriteria: Cru
 }
 
 function getActionButtonClassName<TItem>(action: CrudTableAction<TItem>, item?: TItem) {
+  if (action.kind === 'delete' || action.tone === 'danger') {
+    return 'crud-table-action-button crud-table-action-delete'
+  }
+
+  if (action.kind === 'edit') {
+    return 'crud-table-action-button crud-table-action-edit'
+  }
+
+  if (action.kind === 'view') {
+    return 'crud-table-action-button crud-table-action-view'
+  }
+
+  // Fallback for actions that don't set `kind` — English-only label matching,
+  // kept for backward compatibility with call sites outside the default actions.
   const rawLabel = typeof action.label === 'function' ? action.label(item as TItem) : action.label
   const label = (rawLabel || '').toLowerCase()
 
-  if (action.tone === 'danger' || label.includes('delete')) {
+  if (label.includes('delete')) {
     return 'crud-table-action-button crud-table-action-delete'
   }
 
@@ -387,15 +420,17 @@ export function CommonTable<TItem>({
   actions = [],
   getActions,
   actionRenderKey = 0,
-  emptyMessage = 'No records found.',
+  emptyMessage,
   isLoading = false,
   rowClassName,
   showSelection = true,
   showActions = true,
 }: CommonTableProps<TItem>) {
+  const { t } = useStaffTranslation()
   const tableData = data as Array<Record<string, unknown>>
   const [filters, setFilters] = useState<DataTableFilterMeta>(() => createInitialFilters(columns))
   const hasInlineActionsColumn = columns.some((column) => isActionsColumn(column))
+  const resolvedEmptyMessage = emptyMessage ?? t('staff.crud.noRecordsFound')
 
   const updateQuery = (nextQuery: CrudListQuery) => {
     onQueryChange(nextQuery)
@@ -479,7 +514,7 @@ export function CommonTable<TItem>({
         <Dropdown
           value={options.value ?? null}
           options={column.filter?.options ?? []}
-          placeholder={column.filter?.placeholder ?? 'Select'}
+          placeholder={column.filter?.placeholder ?? t('staff.crud.select')}
           showClear
           className="w-full"
           onChange={(event) => options.filterCallback(event.value)}
@@ -492,7 +527,7 @@ export function CommonTable<TItem>({
         <MultiSelect
           value={options.value ?? []}
           options={column.filter?.options ?? []}
-          placeholder={column.filter?.placeholder ?? 'Filter'}
+          placeholder={column.filter?.placeholder ?? t('staff.crud.filterPrefix')}
           display="chip"
           className="w-full"
           maxSelectedLabels={2}
@@ -507,7 +542,7 @@ export function CommonTable<TItem>({
           value={options.value as Date | undefined | null}
           onChange={(e) => options.filterCallback(e.value)}
           dateFormat="dd-mm-yy"
-          placeholder="Select Date"
+          placeholder={t('staff.crud.selectDate')}
           mask="99-99-9999"
           showButtonBar
         />
@@ -518,7 +553,7 @@ export function CommonTable<TItem>({
       return (options: { value: unknown; filterCallback: (value: unknown) => void }) => (
         <InputNumber
           value={typeof options.value === 'number' ? options.value : null}
-          placeholder={column.filter?.placeholder ?? 'Enter value'}
+          placeholder={column.filter?.placeholder ?? t('staff.crud.enterValue')}
           className="w-full"
           inputClassName="w-full"
           onValueChange={(event) => options.filterCallback(event.value)}
@@ -534,7 +569,7 @@ export function CommonTable<TItem>({
       value={tableData}
       dataKey={(item) => String(getRowId(item as TItem))}
       loading={isLoading}
-      emptyMessage={emptyMessage}
+      emptyMessage={resolvedEmptyMessage}
       lazy
       totalRecords={totalRecords}
       sortField={query.sortfield}
@@ -586,7 +621,7 @@ export function CommonTable<TItem>({
             filterPlaceholder={column.filter?.placeholder}
             showFilterMenu
             filterMatchMode={getDefaultMatchMode(column)}
-            filterMatchModeOptions={getFilterMatchModeOptions(column)}
+            filterMatchModeOptions={getFilterMatchModeOptions(column, t)}
             showFilterMatchModes
             showFilterOperator={false}
             showAddButton={false}
@@ -607,7 +642,7 @@ export function CommonTable<TItem>({
       {showActions && !hasInlineActionsColumn && (actions.length > 0 || Boolean(getActions)) ? (
         <Column
           key={`actions-${actionRenderKey}`}
-          header="Action"
+          header={t('staff.crud.action')}
           body={(item: Record<string, unknown>) => actionsTemplate(item as TItem)}
           headerClassName="text-left"
           style={{ width: '7rem' }}

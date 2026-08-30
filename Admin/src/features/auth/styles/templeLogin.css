@@ -1,0 +1,439 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Yatra+One&family=Mukta:wght@400;500;600;700&display=swap');
+
+.temple-login {
+  --tl-bg: #faf3e2;
+  --tl-bg-soft: #f2e7cc;
+  --tl-panel: #fffdf8;
+  --tl-line: #e7d9b8;
+  --tl-line-strong: #d7be86;
+  --tl-ink: #2b1710;
+  --tl-ink-soft: #7c6850;
+  --tl-maroon: #7c1220;
+  --tl-maroon-deep: #4a0b14;
+  --tl-gold: #a9790c;
+  --tl-gold-bright: #ce9a24;
+  --tl-gold-pale: #f3e3b8;
+  --tl-vermilion: #c1421a;
+  --tl-cream-text: #fbf1dc;
+  --tl-radius: 18px;
+  --tl-font-brand: 'Yatra One', cursive;
+  --tl-font-display: 'Cinzel', serif;
+  --tl-font-accent: 'Cormorant Garamond', serif;
+  --tl-font-body: 'Mukta', sans-serif;
+
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+  color: var(--tl-ink);
+  font-family: var(--tl-font-body);
+  background:
+    radial-gradient(circle at 12% 10%, rgba(206, 154, 36, 0.1), transparent 40%),
+    radial-gradient(circle at 90% 6%, rgba(193, 66, 26, 0.06), transparent 45%),
+    linear-gradient(180deg, var(--tl-bg) 0%, var(--tl-bg-soft) 100%);
+}
+
+.temple-login-lang-strip {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 10px 24px;
+  background: linear-gradient(90deg, var(--tl-maroon-deep), var(--tl-maroon));
+  color: var(--tl-cream-text);
+  font-family: var(--tl-font-body);
+  font-size: 12px;
+}
+
+.temple-login-lang-strip .temple-login-lang-icon {
+  margin-right: 6px;
+  opacity: 0.85;
+}
+
+.temple-login-back-link {
+  margin-right: auto;
+  color: var(--tl-cream-text);
+  font-family: inherit;
+  font-size: 12px;
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+.temple-login-back-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.temple-login-lang-strip button {
+  border: none;
+  background: transparent;
+  color: var(--tl-cream-text);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 3px 6px;
+  opacity: 0.75;
+  border-radius: 6px;
+}
+
+.temple-login-lang-strip button:hover {
+  opacity: 1;
+}
+
+.temple-login-lang-strip button.active {
+  opacity: 1;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.temple-login-lang-strip .temple-login-sep {
+  opacity: 0.4;
+}
+
+.temple-login-lang-select {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--tl-cream-text);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.temple-login-lang-select option {
+  color: var(--tl-ink);
+}
+
+.temple-login-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 36px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 32px 60px;
+  /* 'start', not 'center' — a tall artwork image must never push the right
+     column's login card down/off-screen by vertically centering it against
+     a much taller sibling; the two columns should size independently. */
+  align-items: start;
+  min-height: calc(100vh - 42px);
+}
+
+@media (max-width: 900px) {
+  .temple-login-hero {
+    grid-template-columns: 1fr;
+    padding: 32px 20px 48px;
+  }
+}
+
+.temple-login-art {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+}
+
+.temple-login-art-image {
+  width: 100%;
+  max-width: 560px;
+  max-height: 78vh;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 30px rgba(122, 18, 32, 0.2));
+}
+
+@media (max-width: 900px) {
+  .temple-login-art-image {
+    max-height: 380px;
+  }
+}
+
+.temple-login-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.temple-login-brand-block {
+  max-width: 480px;
+}
+
+.temple-login-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.temple-login-brand-name {
+  font-family: var(--tl-font-brand);
+  font-size: 21px;
+  line-height: 1;
+  color: var(--tl-maroon);
+}
+
+.temple-login-brand-subtitle {
+  font-family: var(--tl-font-body);
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--tl-gold);
+  font-weight: 600;
+  margin-top: 3px;
+}
+
+.temple-login-eyebrow {
+  font-family: var(--tl-font-accent);
+  font-style: italic;
+  font-size: 16px;
+  color: var(--tl-maroon);
+  margin: 0 0 10px;
+}
+
+.temple-login-title {
+  font-family: var(--tl-font-display);
+  font-weight: 600;
+  font-size: clamp(26px, 3vw, 36px);
+  line-height: 1.25;
+  color: var(--tl-ink);
+  margin: 0;
+  letter-spacing: 0.3px;
+}
+
+.temple-login-title span {
+  color: var(--tl-maroon);
+}
+
+.temple-login-tagline {
+  font-family: var(--tl-font-body);
+  font-size: 15.5px;
+  color: var(--tl-ink-soft);
+  max-width: 460px;
+  margin: 16px 0 22px;
+  line-height: 1.65;
+}
+
+.temple-login-chips {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.temple-login-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 24px;
+  background: var(--tl-panel);
+  border: 1px solid var(--tl-line);
+  font-size: 12.5px;
+  font-family: var(--tl-font-body);
+  box-shadow: 0 10px 24px rgba(122, 18, 32, 0.08);
+}
+
+.temple-login-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #146569;
+  box-shadow: 0 0 6px #146569;
+}
+
+.temple-login-card {
+  background: var(--tl-panel);
+  border: 1px solid var(--tl-line);
+  border-radius: var(--tl-radius);
+  padding: 32px;
+  position: relative;
+  box-shadow: 0 22px 46px rgba(122, 18, 32, 0.12);
+}
+
+.temple-login-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--tl-gold);
+  opacity: 0.7;
+}
+
+.temple-login-corner.tl {
+  top: 9px;
+  left: 9px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.temple-login-corner.tr {
+  top: 9px;
+  right: 9px;
+  border-left: none;
+  border-bottom: none;
+}
+
+.temple-login-corner.bl {
+  bottom: 9px;
+  left: 9px;
+  border-right: none;
+  border-top: none;
+}
+
+.temple-login-corner.br {
+  bottom: 9px;
+  right: 9px;
+  border-left: none;
+  border-top: none;
+}
+
+.temple-login-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 22px;
+  background: var(--tl-bg-soft);
+  padding: 4px;
+  border-radius: 24px;
+}
+
+.temple-login-tabs button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 20px;
+  background: transparent;
+  color: var(--tl-ink-soft);
+  font-family: var(--tl-font-body);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.temple-login-tabs button.active {
+  color: var(--tl-cream-text);
+  background: linear-gradient(90deg, var(--tl-maroon), var(--tl-vermilion));
+}
+
+.temple-login-card .temple-login-tabs a {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 20px;
+  color: var(--tl-ink-soft);
+  font-family: var(--tl-font-body);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.temple-login-card .temple-login-tabs a:hover {
+  background: rgba(122, 18, 32, 0.06);
+  color: var(--tl-maroon);
+}
+
+.temple-login-card-note {
+  margin-top: 16px;
+  font-size: 11.5px;
+  color: var(--tl-ink-soft);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.temple-login-card-title {
+  font-family: var(--tl-font-display);
+  font-weight: 600;
+  font-size: 19px;
+  color: var(--tl-maroon);
+  margin: 0 0 18px;
+  text-align: center;
+}
+
+.temple-login-devotee-link {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 12.5px;
+}
+
+.temple-login-devotee-link a {
+  color: var(--tl-maroon);
+  font-weight: 600;
+}
+
+.temple-login-devotee-link a:hover {
+  color: var(--tl-vermilion);
+}
+
+.temple-login-footer {
+  text-align: center;
+  padding: 0 20px 32px;
+  color: var(--tl-ink-soft);
+  font-size: 12px;
+}
+
+/* Scoped form styling — overrides PrimeReact defaults only inside the temple login card */
+.temple-login-card label {
+  font-size: 12px;
+  color: var(--tl-maroon) !important;
+  font-family: var(--tl-font-body);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.temple-login-card .p-inputtext,
+.temple-login-card .p-password-input {
+  border-radius: 12px;
+  border: 1px solid var(--tl-line);
+  background: var(--tl-bg);
+  color: var(--tl-ink);
+  font-family: var(--tl-font-body);
+  min-height: 2.75rem;
+}
+
+.temple-login-card .p-inputtext:enabled:focus,
+.temple-login-card .p-password-input:enabled:focus {
+  border-color: var(--tl-gold);
+  box-shadow: 0 0 0 3px rgba(206, 154, 36, 0.25);
+}
+
+.temple-login-card .p-checkbox .p-checkbox-box {
+  border-color: var(--tl-maroon);
+}
+
+.temple-login-card .p-checkbox.p-highlight .p-checkbox-box {
+  border-color: var(--tl-maroon);
+  background: var(--tl-maroon);
+}
+
+.temple-login-card .p-button {
+  width: 100%;
+  justify-content: center;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, var(--tl-maroon), var(--tl-vermilion));
+  color: var(--tl-cream-text);
+  font-family: var(--tl-font-body);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  padding: 0.85rem 1rem;
+  box-shadow: 0 10px 24px rgba(193, 66, 26, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.temple-login-card .p-button:enabled:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(193, 66, 26, 0.32);
+  background: linear-gradient(90deg, var(--tl-maroon), var(--tl-vermilion));
+  border: none;
+}
+
+.temple-login-card a {
+  color: var(--tl-maroon);
+  font-weight: 600;
+}
+
+.temple-login-card a:hover {
+  color: var(--tl-vermilion);
+}
+
+.temple-login-card .p-message.p-message-error {
+  border-radius: 10px;
+}

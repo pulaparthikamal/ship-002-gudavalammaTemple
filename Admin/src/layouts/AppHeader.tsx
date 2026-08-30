@@ -1,7 +1,9 @@
 import { Menu, Moon, Sun } from 'lucide-react'
 import { Button } from 'primereact/button'
 import { BrandLogo } from '@/components/ui/BrandLogo'
+import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 import { selectSidebarCollapsed } from '@/features/preferences/preferencesSlice'
+import { useStaffTranslation } from '@/i18n/useTranslation'
 import { useAppSelector } from '@/hooks/redux'
 import { useTheme } from '@/hooks/useTheme'
 
@@ -13,8 +15,9 @@ interface AppHeaderProps {
 export function AppHeader({ onOpenMobileMenu, isSidebarHoverExpanded }: AppHeaderProps) {
   const isSidebarCollapsed = useAppSelector(selectSidebarCollapsed)
   const { resolvedTheme, toggleTheme } = useTheme()
+  const { t } = useStaffTranslation()
   const ThemeIcon = resolvedTheme === 'dark' ? Sun : Moon
-  const nextThemeLabel = resolvedTheme === 'dark' ? 'light' : 'dark'
+  const themeToggleLabel = resolvedTheme === 'dark' ? t('header.switchToLightTheme') : t('header.switchToDarkTheme')
 
   return (
     <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-[var(--color-border)] bg-[var(--color-surface)] px-3 backdrop-blur md:px-5">
@@ -24,8 +27,8 @@ export function AppHeader({ onOpenMobileMenu, isSidebarHoverExpanded }: AppHeade
           text
           rounded
           severity="secondary"
-          aria-label="Open menu"
-          title="Open menu"
+          aria-label={t('header.openMenu')}
+          title={t('header.openMenu')}
           className="lg:hidden"
           onClick={onOpenMobileMenu}
         >
@@ -37,13 +40,14 @@ export function AppHeader({ onOpenMobileMenu, isSidebarHoverExpanded }: AppHeade
       </div>
 
       <div className="flex min-w-0 items-center gap-3">
+        <LanguageSwitcher audience="staff" />
         <Button
           type="button"
           text
           rounded
           severity="secondary"
-          aria-label={`Switch to ${nextThemeLabel} theme`}
-          title={`Switch to ${nextThemeLabel} theme`}
+          aria-label={themeToggleLabel}
+          title={themeToggleLabel}
           onClick={toggleTheme}
         >
           <ThemeIcon className="h-4 w-4" aria-hidden="true" />

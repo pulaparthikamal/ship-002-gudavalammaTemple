@@ -14,6 +14,7 @@ export const initialAuthState: AuthState = {
   loginData: null,
   status: 'anonymous',
   error: null,
+  audience: null,
 }
 
 export function isAccessTokenExpired(expiresAt: number | null) {
@@ -32,6 +33,7 @@ const authSlice = createSlice({
       state.loginData = action.payload.loginData
       state.status = 'authenticated'
       state.error = null
+      state.audience = action.payload.audience
     },
     logout: () => initialAuthState,
     sessionExpired: (state, action: PayloadAction<string | undefined>) => {
@@ -47,10 +49,13 @@ const authSlice = createSlice({
       state.accessToken = action.payload.accessToken
       state.expiresAt = action.payload.expiresAt
     },
-    updateProfile: (state, action: PayloadAction<Pick<AuthUser, 'name' | 'email'>>) => {
+    updateProfile: (state, action: PayloadAction<Pick<AuthUser, 'name' | 'email'> & { phone?: string }>) => {
       if (state.user) {
         state.user.name = action.payload.name
         state.user.email = action.payload.email
+      }
+      if (state.loginData && action.payload.phone !== undefined) {
+        state.loginData.phone = action.payload.phone
       }
     },
     clearAuthError: (state) => {
@@ -70,6 +75,7 @@ export const selectAccessToken = (state: AuthRootState) => state.auth.accessToke
 export const selectRefreshToken = (state: AuthRootState) => state.auth.refreshToken
 export const selectTokenExpiresAt = (state: AuthRootState) => state.auth.expiresAt
 export const selectAuthError = (state: AuthRootState) => state.auth.error
+export const selectAuthAudience = (state: AuthRootState) => state.auth.audience
 
 export const selectIsAuthenticated = (state: AuthRootState) =>
   state.auth.status === 'authenticated' &&

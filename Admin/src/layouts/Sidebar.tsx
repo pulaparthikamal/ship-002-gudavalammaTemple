@@ -16,6 +16,7 @@ import { BrandLogo } from '@/components/ui/BrandLogo'
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog'
 import { logout, selectCurrentUser } from '@/features/auth/authSlice'
 import { selectSidebarCollapsed, toggleSidebar } from '@/features/preferences/preferencesSlice'
+import { useStaffTranslation } from '@/i18n/useTranslation'
 import { useAppDispatch, useAppSelector } from '@/hooks/redux'
 import { useGetMenusQuery } from '@/services/api/endpoints/menusApi'
 import type { AppMenuItem } from '@/types/menu'
@@ -30,8 +31,11 @@ interface SidebarProps {
   onDesktopHoverExpandedChange: (isExpanded: boolean) => void
 }
 
-function getMenuTitle(item: AppMenuItem) {
-  return item.title || item.name || item.route
+type TFn = (key: string, params?: Record<string, string | number>) => string
+
+function getMenuTitle(t: TFn, item: AppMenuItem) {
+  const rawTitle = item.title || item.name || item.route || ''
+  return rawTitle ? t(rawTitle) : rawTitle
 }
 
 function getMenuKey(item: AppMenuItem) {
@@ -88,6 +92,7 @@ function filterMenusByPermission(items: AppMenuItem[], permissions: Record<strin
 }
 
 export function Sidebar({ mobileOpen, onCloseMobile, onDesktopHoverExpandedChange }: SidebarProps) {
+  const { t } = useStaffTranslation()
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
@@ -199,7 +204,7 @@ const accountActionClassName =
         onClick={() => openRoute('/profile')}
       >
         <UserRound className="h-4 w-4" />
-        Account
+        {t('sidebar.account')}
       </button>
       <button
         type="button"
@@ -207,7 +212,7 @@ const accountActionClassName =
         onClick={() => openRoute('/settings')}
       >
         <Settings className="h-4 w-4" />
-        Settings
+        {t('sidebar.settings')}
       </button>
       <button
         type="button"
@@ -215,7 +220,7 @@ const accountActionClassName =
         onClick={confirmLogout}
       >
         <LogOut className="h-4 w-4" />
-        Log out
+        {t('sidebar.logout')}
       </button>
     </>
   )
@@ -236,7 +241,7 @@ const accountActionClassName =
     options: { compact?: boolean; isSubmenu?: boolean; closeOnNavigate?: boolean; depth?: number } = {},
   ) => {
     const Icon = resolveMenuIcon(item.iconName)
-    const title = getMenuTitle(item)
+    const title = getMenuTitle(t, item)
     const { compact = false, isSubmenu = false, closeOnNavigate = false, depth = 0 } = options
     const handleNavigate = () => {
       collapseHoveredSidebar()
@@ -276,12 +281,15 @@ const accountActionClassName =
 
     const key = getMenuKey(item)
     const Icon = resolveMenuIcon(item.iconName)
-    const title = getMenuTitle(item)
+    const title = getMenuTitle(t, item)
     const hasActiveChild = hasActiveRoute(item, location.pathname)
+    // Keyed on the untranslated identifier, not the (now-translatable) display
+    // title — a Telugu/Hindi title would never equal the English literal.
+    const isTempleSection = item.permissionKey === 'donor'
 
     if (compact) {
       return (
-        <div key={key} className="space-y-1">
+        <div key={key} className={cn('space-y-1', isTempleSection && 'sidebar-temple-section')}>
           <button
             type="button"
             title={title}
@@ -298,7 +306,7 @@ const accountActionClassName =
     const isOpen = openMenus[key] ?? false
 
     return (
-      <div key={key} className="space-y-1">
+      <div key={key} className={cn('space-y-1', isTempleSection && 'sidebar-temple-section')}>
         <button
           type="button"
           className={cn(
@@ -366,7 +374,7 @@ const accountActionClassName =
             text
             rounded
             severity="secondary"
-            aria-label="Toggle sidebar"
+            aria-label={t('sidebar.toggleSidebar')}
             className="h-12 w-12 shrink-0 p-0"
             onClick={() => {
               setIsHoverExpanded(false)
@@ -381,12 +389,12 @@ const accountActionClassName =
         <nav className="min-h-0 flex-1 space-y-0.5 overflow-y-auto px-2 py-3">
           {isFetching ? (
             <p className={cn('px-3 py-2 text-sm text-[var(--color-text-muted)]', isDesktopCompact && 'sr-only')}>
-              Loading menus
+              {t('sidebar.loadingMenus')}
             </p>
           ) : null}
           {isError ? (
             <p className={cn('px-3 py-2 text-sm text-red-600', isDesktopCompact && 'sr-only')}>
-              Menus unavailable
+              {t('sidebar.menusUnavailable')}
             </p>
           ) : null}
           {menus.map((item) => renderMenu(item, { compact: isDesktopCompact }))}
@@ -408,7 +416,7 @@ const accountActionClassName =
               <>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-[var(--color-text-strong)]">
-                    {currentUser?.name ?? 'User'}
+                    {currentUser?.name ?? t('sidebar.defaultUserName')}
                   </p>
                   {currentUser?.email ? (
                     <p className="truncate text-[11px] text-[var(--color-text-muted)]">{currentUser.email}</p>
@@ -431,7 +439,7 @@ const accountActionClassName =
     <>
       <button
         type="button"
-        aria-label="Close menu overlay"
+        aria-label={t('sidebar.closeMenuOverlay')}
         className={cn(
           'fixed inset-0 z-30 bg-neutral-950/40 transition-opacity lg:hidden',
           mobileOpen ? 'opacity-100' : 'pointer-events-none opacity-0',
@@ -451,7 +459,7 @@ const accountActionClassName =
             text
             rounded
             severity="secondary"
-            aria-label="Close menu"
+            aria-label={t('sidebar.closeMenu')}
             className="h-12 w-12 shrink-0 p-0"
             onClick={onCloseMobile}
           >
@@ -460,8 +468,8 @@ const accountActionClassName =
         </div>
 
         <nav className="min-h-0 flex-1 space-y-0.5 overflow-y-auto px-2 py-3">
-          {isFetching ? <p className="px-3 py-2 text-sm text-[var(--color-text-muted)]">Loading menus</p> : null}
-          {isError ? <p className="px-3 py-2 text-sm text-red-600">Menus unavailable</p> : null}
+          {isFetching ? <p className="px-3 py-2 text-sm text-[var(--color-text-muted)]">{t('sidebar.loadingMenus')}</p> : null}
+          {isError ? <p className="px-3 py-2 text-sm text-red-600">{t('sidebar.menusUnavailable')}</p> : null}
           {menus.map((item) => renderMenu(item, { closeOnNavigate: true }))}
         </nav>
 
@@ -472,7 +480,7 @@ const accountActionClassName =
             </span>
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold text-[var(--color-text-strong)]">
-                {currentUser?.name ?? 'User'}
+                {currentUser?.name ?? t('sidebar.defaultUserName')}
               </p>
               {currentUser?.email ? (
                 <p className="truncate text-xs text-[var(--color-text-muted)]">{currentUser.email}</p>
@@ -493,10 +501,10 @@ const accountActionClassName =
 
       <ConfirmationDialog
         open={isLogoutDialogOpen}
-        title="Logout?"
-        message="Your current session will be closed. You can sign in again whenever you need access."
-        confirmLabel="Logout"
-        cancelLabel="Cancel"
+        title={t('sidebar.logoutConfirmTitle')}
+        message={t('sidebar.logoutConfirmMessage')}
+        confirmLabel={t('sidebar.logoutConfirmLabel')}
+        cancelLabel={t('sidebar.cancelLabel')}
         tone="danger"
         onClose={() => setIsLogoutDialogOpen(false)}
         onConfirm={handleConfirmedLogout}

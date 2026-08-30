@@ -37,7 +37,7 @@ export const menuController = {
   },
 
   async getMyMenu(req: Request, res: Response) {
-    const data = await menuService.getMyMenu((req as any).user.role);
+    const data = await menuService.getMyMenu((req as any).user.role, req.locale || 'en');
     req.entityType = 'menu';
     req.menu = data;
     return res.json(respUtil.getDetailsSuccessResponse(req));

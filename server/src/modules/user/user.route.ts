@@ -9,11 +9,19 @@ import {
   createUserSchema,
   updateUserSchema,
   updateUserStatusSchema,
+  updateOwnLocaleSchema,
+  updateOwnProfileSchema,
 } from './user.schema';
 
 const router = Router();
 
 router.use(authMiddleware);
+
+// Self-service: update the current user's own preferred locale.
+router.patch('/me/locale', validate(updateOwnLocaleSchema), asyncHandler(userController.updateOwnLocale));
+
+// Self-service: update the current user's own profile (name/email/phone only).
+router.patch('/me', validate(updateOwnProfileSchema), asyncHandler(userController.updateOwnProfile));
 
 // Delete remains SUPER_ADMIN only, or we could use permissionGuard('users', 'Delete')
 router.delete('/:id', permissionGuard('users', 'Delete'), asyncHandler(userController.delete));

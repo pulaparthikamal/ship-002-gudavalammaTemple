@@ -9,7 +9,6 @@ import { LoadingScreen } from '@/components/ui/LoadingScreen'
 import { ThemeController } from './ThemeController'
 import { SessionExpiredModal } from '@/features/auth/components/SessionExpiredModal'
 import { SessionActivityManager } from '@/features/auth/components/SessionActivityManager'
-import { RcmRealtimeBridge } from '@/components/rcm/RcmRealtimeBridge'
 
 export function AppProviders({ children }: PropsWithChildren) {
   return (
@@ -19,7 +18,6 @@ export function AppProviders({ children }: PropsWithChildren) {
           <ThemeController />
           <ToastProvider>
             <BrowserRouter>
-              <RcmRealtimeBridge />
               {children}
               <SessionExpiredModal />
               <SessionActivityManager />
