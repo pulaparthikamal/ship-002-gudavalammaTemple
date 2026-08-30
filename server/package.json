@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Enterprise Node.js + TypeScript Backend Template",
   "main": "dist/server.js",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only src/server.ts",
     "build": "tsc && tsc-alias",

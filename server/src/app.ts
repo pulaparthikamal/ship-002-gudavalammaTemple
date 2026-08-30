@@ -31,6 +31,12 @@ app.use(
 app.use(cors(corsConfig));
 app.use(xss());
 app.use(hpp());
+
+// Unauthenticated, no-dependency liveness check — used by the host's health
+// check (Render, etc.) and by an external uptime pinger to prevent a free-tier
+// instance from idling to sleep (which would also pause the node-cron job).
+app.get('/health', (_req: Request, res: Response) => res.status(200).json({ status: 'ok' }));
+
 app.use(apiRateLimiter);
 
 // Parse JSON and url-encoded body. Preserve raw JSON bytes for signed healthcare webhooks.

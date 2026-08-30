@@ -35,7 +35,6 @@ export const connectDB = async (retryCount = 0): Promise<void> => {
     }
   }
 
-  console.log(envConfig.mongoUri);
   mongoose.connection.on('disconnected', () => {
     console.error('MongoDB disconnected! Mongoose will attempt to reconnect automatically.');
   });
