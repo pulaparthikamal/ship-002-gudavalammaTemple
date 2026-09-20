@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { TempleGopuramMark } from './TempleGopuramMark'
 import { cn } from '@/utils/classNames'
 import { useGetTempleProfileQuery } from '@/services/api/endpoints/templeProfileApi'
@@ -14,14 +15,25 @@ interface BrandLogoProps {
  * Renders the staff-uploaded TempleProfile.logoUrl when one exists (set via
  * the Temple Profile screen's logo uploader), falling back to the built-in
  * gopuram illustration otherwise — so every call site updates automatically
- * the moment staff upload a new logo, without code changes.
+ * the moment staff upload a new logo, without code changes. Also falls back
+ * on a load error (e.g. an uploaded file no longer on disk) rather than
+ * showing a broken-image icon.
  */
 function BrandMark({ className }: { className?: string }) {
   const { data: templeProfile } = useGetTempleProfileQuery()
-  const logoUrl = templeProfile?.logoUrl ? resolveApiAssetUrl(templeProfile.logoUrl) : ''
+  const [loadFailed, setLoadFailed] = useState(false)
+  const logoUrl = templeProfile?.logoUrl && !loadFailed ? resolveApiAssetUrl(templeProfile.logoUrl) : ''
 
   if (logoUrl) {
-    return <img src={logoUrl} alt="" aria-hidden="true" className={cn('block object-contain', className)} />
+    return (
+      <img
+        src={logoUrl}
+        alt=""
+        aria-hidden="true"
+        className={cn('block object-contain', className)}
+        onError={() => setLoadFailed(true)}
+      />
+    )
   }
 
   return <TempleGopuramMark className={className} />

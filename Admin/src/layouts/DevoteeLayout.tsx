@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { logout, selectCurrentUser, selectIsAuthenticated } from '@/features/auth/authSlice'
 import { LanguageSwitcher } from '@/components/LanguageSwitcher'
@@ -65,7 +65,8 @@ export function DevoteeLayout() {
   const visibleNavItems = enabledNavTabs
     ? NAV_ITEMS.filter((item) => enabledNavTabs.some((tab) => tab.key === item.navKey))
     : NAV_ITEMS
-  const brandMarkSrc = templeProfile?.logoUrl ? resolveApiAssetUrl(templeProfile.logoUrl) : gudavalammaDeviImage
+  const [logoFailed, setLogoFailed] = useState(false)
+  const brandMarkSrc = templeProfile?.logoUrl && !logoFailed ? resolveApiAssetUrl(templeProfile.logoUrl) : gudavalammaDeviImage
 
   useEffect(() => {
     trackPageview(location.pathname)
@@ -88,7 +89,13 @@ export function DevoteeLayout() {
 
       <header className="dp-header">
         <NavLink to="/" className="dp-brand">
-          <img className="dp-brand-mark" src={brandMarkSrc} alt="" aria-hidden="true" />
+          <img
+            className="dp-brand-mark"
+            src={brandMarkSrc}
+            alt=""
+            aria-hidden="true"
+            onError={() => setLogoFailed(true)}
+          />
           <span>
             <span className="dp-brand-name" style={{ display: 'block' }}>
               {resolveTempleName(templeProfile, language, t('devotee.appName'))}

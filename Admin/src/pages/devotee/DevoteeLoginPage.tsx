@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { DevoteeArtwork } from '@/features/devotee/components/DevoteeArtwork'
 import { DevoteeLoginForm } from '@/features/devotee/components/DevoteeLoginForm'
@@ -14,7 +15,8 @@ import '@/features/devotee/styles/devoteePortal.css'
 export function DevoteeLoginPage() {
   const { t, language } = useDevoteeTranslation()
   const { data: templeProfile } = useGetTempleProfileQuery()
-  const brandMarkSrc = templeProfile?.logoUrl ? resolveApiAssetUrl(templeProfile.logoUrl) : gudavalammaDeviImage
+  const [logoFailed, setLogoFailed] = useState(false)
+  const brandMarkSrc = templeProfile?.logoUrl && !logoFailed ? resolveApiAssetUrl(templeProfile.logoUrl) : gudavalammaDeviImage
 
   return (
     <div className="dp-auth-hero">
@@ -22,7 +24,13 @@ export function DevoteeLoginPage() {
 
         <div>
           <div className="dp-auth-brand-row">
-            <img src={brandMarkSrc} alt="" aria-hidden="true" style={{ height: 34, width: 'auto', objectFit: 'contain' }} />
+            <img
+              src={brandMarkSrc}
+              alt=""
+              aria-hidden="true"
+              style={{ height: 34, width: 'auto', objectFit: 'contain' }}
+              onError={() => setLogoFailed(true)}
+            />
             <div>
               <div style={{ fontFamily: 'var(--dp-font-brand)', fontSize: 21, color: 'var(--dp-maroon)', lineHeight: 1 }}>
                 {resolveTempleName(templeProfile, language, t('devotee.appName'))}

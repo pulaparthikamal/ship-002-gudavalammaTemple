@@ -117,7 +117,9 @@ export function DevoteeDashboardPage() {
   ]
 
   const schedule = templeProfile?.timings ?? []
-  const heroDeityImage = templeProfile?.deityImageUrl ? resolveApiAssetUrl(templeProfile.deityImageUrl) : gudavalammaDeviImage
+  const [heroImageFailed, setHeroImageFailed] = useState(false)
+  const heroDeityImage =
+    templeProfile?.deityImageUrl && !heroImageFailed ? resolveApiAssetUrl(templeProfile.deityImageUrl) : gudavalammaDeviImage
 
   return (
     <div className="dp-page">
@@ -161,6 +163,7 @@ export function DevoteeDashboardPage() {
               className="dp-hero-deity"
               src={heroDeityImage}
               alt={resolveTempleName(templeProfile, language, t('devotee.appName'))}
+              onError={() => setHeroImageFailed(true)}
             />
           </div>
           <p>{t('devotee.homeHeroSubtitle')}</p>

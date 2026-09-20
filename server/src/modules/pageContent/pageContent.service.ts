@@ -6,10 +6,6 @@ import { AppError } from '../../utils/error.util';
 
 const MAX_VERSIONS = 20;
 
-/** Used only if TempleProfile has neither a deityImageUrl nor a logoUrl set yet. */
-const FALLBACK_DEITY_IMAGE_URL =
-  '/uploads/temple-profile/1788102326463-57202022-ff13-46a4-a552-2add53938ab3-gudavalamma-devi.webp';
-
 /**
  * A screen's starting widget layout, used only until staff save/publish
  * their own draft for that screen (once a real PageContent doc exists, this
@@ -22,14 +18,19 @@ const FALLBACK_DEITY_IMAGE_URL =
  * picture in Temple Profile, the login/register artwork picks it up too,
  * with no Screen Customizer edit required. A portrait box (w:6,h:7) with
  * `objectFit: 'contain'` avoids the cropping a full-width, short box would
- * force on a tall photo.
+ * force on a tall photo. No image widget at all until staff have uploaded a
+ * real logo or deity picture — there is no bundled fallback file on the
+ * server to point to instead (uploads/ isn't shipped with the repo), and the
+ * frontend already renders its own bundled placeholder when this screen has
+ * no image widget.
  */
 const getDefaultWidgets = async (screenKey: ScreenKey): Promise<IWidget[]> => {
   if (screenKey !== 'devoteeAuth') return [];
 
   const { templeProfileService } = await import('../templeProfile/templeProfile.service');
   const profile = await templeProfileService.getOrCreate();
-  const imageUrl = profile.deityImageUrl || profile.logoUrl || FALLBACK_DEITY_IMAGE_URL;
+  const imageUrl = profile.deityImageUrl || profile.logoUrl;
+  if (!imageUrl) return [];
 
   return [
     {
