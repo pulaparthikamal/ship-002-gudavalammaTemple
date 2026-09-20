@@ -42,12 +42,14 @@ function ButtonWidget({ widget }: { widget: Widget }) {
 }
 
 function ImageWidget({ widget }: { widget: Widget }) {
-  if (!widget.imageUrl) return null
+  const [failed, setFailed] = useState(false)
+  if (!widget.imageUrl || failed) return null
   const img = (
     <img
       src={resolveApiAssetUrl(widget.imageUrl)}
       alt=""
       style={{ width: '100%', height: '100%', objectFit: widget.objectFit ?? 'cover', borderRadius: 12 }}
+      onError={() => setFailed(true)}
     />
   )
   return widget.linkUrl ? <a href={widget.linkUrl}>{img}</a> : img
@@ -56,6 +58,7 @@ function ImageWidget({ widget }: { widget: Widget }) {
 function CarouselWidget({ widget }: { widget: Widget }) {
   const images = widget.images ?? []
   const [index, setIndex] = useState(0)
+  const [failed, setFailed] = useState<Record<number, boolean>>({})
 
   useEffect(() => {
     if (images.length < 2) return
@@ -66,15 +69,27 @@ function CarouselWidget({ widget }: { widget: Widget }) {
 
   if (!images.length) return null
   const current = images[index]
+  if (failed[index]) return null
+  const onImageError = () => setFailed((f) => ({ ...f, [index]: true }))
 
   return (
     <div style={{ position: 'relative', width: '100%', height: widget.heightPx ?? '100%', overflow: 'hidden', borderRadius: 12 }}>
       {current.linkUrl ? (
         <a href={current.linkUrl}>
-          <img src={resolveApiAssetUrl(current.url)} alt={current.caption ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img
+            src={resolveApiAssetUrl(current.url)}
+            alt={current.caption ?? ''}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            onError={onImageError}
+          />
         </a>
       ) : (
-        <img src={resolveApiAssetUrl(current.url)} alt={current.caption ?? ''} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <img
+          src={resolveApiAssetUrl(current.url)}
+          alt={current.caption ?? ''}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          onError={onImageError}
+        />
       )}
       {current.caption && (
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '8px 12px', background: 'rgba(43,23,16,0.55)', color: '#fbf1dc', fontSize: 13 }}>
@@ -128,13 +143,19 @@ function SocialLinksWidgetRenderer() {
 
 function AnnouncementBannerWidget() {
   const { data: announcements } = useGetActiveAnnouncementsQuery()
+  const [imageFailed, setImageFailed] = useState(false)
   const top = announcements?.slice().sort((a, b) => b.priority - a.priority)[0]
   if (!top) return null
 
   return (
     <div className="dp-panel" style={{ display: 'flex', gap: 12, alignItems: 'center', width: '100%', height: '100%' }}>
-      {top.imageUrl && (
-        <img src={resolveApiAssetUrl(top.imageUrl)} alt="" style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8 }} />
+      {top.imageUrl && !imageFailed && (
+        <img
+          src={resolveApiAssetUrl(top.imageUrl)}
+          alt=""
+          style={{ width: 64, height: 64, objectFit: 'cover', borderRadius: 8 }}
+          onError={() => setImageFailed(true)}
+        />
       )}
       <div>
         <strong>{top.title}</strong>
