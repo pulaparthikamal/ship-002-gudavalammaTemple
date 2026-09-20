@@ -375,7 +375,7 @@ export const te: TranslationDict = {
     profileSaveButton: 'మార్పులను సేవ్ చేయండి',
     profileSavedToast: 'ప్రొఫైల్ నవీకరించబడింది.',
 
-    footerAddress: '10-19-54, టెంపుల్ స్ట్రీట్, గుడవల్లి, ఆంధ్రప్రదేశ్, భారతదేశం',
+    footerAddress: 'పులపర్తి వారి తోట బ్రిడ్జి సమీపంలో, మొగల్తూరు, ఆంధ్రప్రదేశ్ - 534281',
     footerHelpline: '24×7 భక్తుల హెల్ప్‌లైన్: 1800-000-0000',
     footerCopyright: '{{templeName}} · భక్తుల సేవల పోర్టల్ — ప్రదర్శన ఉద్దేశాల కోసం మాత్రమే.',
     footerPrivacyPolicy: 'గోప్యతా విధానం',

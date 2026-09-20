@@ -375,7 +375,7 @@ export const hi: TranslationDict = {
     profileSaveButton: 'बदलाव सहेजें',
     profileSavedToast: 'प्रोफ़ाइल अपडेट हो गई।',
 
-    footerAddress: '10-19-54, टेम्पल स्ट्रीट, गुडवल्ली, आंध्र प्रदेश, भारत',
+    footerAddress: 'पुलपर्ति वारी थोटा ब्रिज के पास, मोगल्तूर, आंध्र प्रदेश - 534281',
     footerHelpline: '24×7 भक्त हेल्पलाइन: 1800-000-0000',
     footerCopyright: '{{templeName}} · भक्त सेवा पोर्टल — केवल प्रदर्शन उद्देश्यों के लिए।',
     footerPrivacyPolicy: 'गोपनीयता नीति',

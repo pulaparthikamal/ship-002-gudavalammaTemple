@@ -30,7 +30,7 @@ export const templeProfileService = {
       profile = await TempleProfile.create({
         templeName: 'Gudavalamma Temple',
         tagline: 'Devotee Services Portal',
-        address: '10-19-54, Temple Street, Gudavalli, Andhra Pradesh, India',
+        address: 'Near Pulaparthi Vari Thota Bridge, Mogaltur, Andhra Pradesh - 534281',
         helpline: '24x7 Devotee Helpline: 1800-000-0000',
         socialLinks: {},
         timings: DEFAULT_TIMINGS,

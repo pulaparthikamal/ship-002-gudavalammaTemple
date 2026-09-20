@@ -375,7 +375,7 @@ export const en: TranslationDict = {
     profileSaveButton: 'Save changes',
     profileSavedToast: 'Profile updated.',
 
-    footerAddress: '10-19-54, Temple Street, Gudavalli, Andhra Pradesh, India',
+    footerAddress: 'Near Pulaparthi Vari Thota Bridge, Mogaltur, Andhra Pradesh - 534281',
     footerHelpline: '24×7 Devotee Helpline: 1800-000-0000',
     footerCopyright: '{{templeName}} · Devotee Services Portal — for demonstration purposes.',
     footerPrivacyPolicy: 'Privacy Policy',
