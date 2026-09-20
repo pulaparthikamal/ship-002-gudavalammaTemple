@@ -16,7 +16,7 @@ How to put this app live, for $0, using free tiers only. No trials, no "free for
 Be aware of these going in — none of them will crash the app, they just quietly degrade:
 
 1. **Render's free tier sleeps after 15 minutes of no traffic**, then takes ~30-50s to wake on the next request (the first visitor after a quiet spell waits). It also means the nightly analytics-rollup cron job won't fire if the service is asleep at 1am. **Fix**: a free external uptime pinger (below) solves both problems at once.
-2. **Uploaded images (temple logo, deity picture, announcement banners) live on Render's local disk, which is ephemeral** — a redeploy or restart can wipe it. Fine for a temple site's low-frequency admin uploads (re-upload if it happens), but don't treat it as permanent storage. If this ever matters, swap the `upload` module to a free tier of Cloudinary or Vercel Blob — not done here, out of scope for the free launch.
+2. ~~Uploaded images live on Render's local disk, which is ephemeral~~ — **fixed**: uploads (temple logo, deity picture, announcement banners) are now stored in MongoDB Atlas via GridFS instead of local disk (see `server/src/config/gridfs.config.ts` and `upload.service.ts`), so they survive restarts and redeploys. Atlas's free M0 tier caps total storage at 512 MB shared across your whole database — fine for images, but avoid uploading large videos through the same `upload` module.
 3. **Translation/transliteration won't do anything in production.** The app's translation pipeline falls back to LibreTranslate + a self-hosted LLM (Ollama), both configured at `localhost` in dev — neither is reachable from a cloud host. This is not a crash: `translationService` is deliberately built to fail closed and just show the original English text when its backend is unreachable (see `ARCHITECTURE.md`). Real translation would require pointing `LLM_PROVIDER` at OpenAI with a paid API key, or self-hosting LibreTranslate/Ollama somewhere reachable — a deliberate later upgrade, not part of this free setup.
 4. **WhatsApp confirmations need a Meta Business/WhatsApp Cloud API setup** (free, but a real signup with its own approval process) — leave `WHATSAPP_*` env vars blank to skip this at launch; the app already treats it as optional and just skips sending.
 
@@ -59,7 +59,7 @@ trailskamal_db_user.  rBQmovm2IGFMKugb
    - `ALLOWED_ORIGINS` — your Vercel URL(s), e.g. `https://gudavalamma-temple.vercel.app` (add the real domain here too later if you buy one — comma-separated, no spaces, no trailing slash).
    - `FRONTEND_URL` — same Vercel URL.
    - `MAIL_HOST`/`MAIL_PORT`/`MAIL_USER`/`MAIL_PASS`/`MAIL_FROM` — reuse your existing Gmail App Password setup from `server/.env`, or any SMTP you already have. Gmail's free daily send limit (~500/day) is plenty for a temple site's booking confirmations.
-   - `UPLOAD_ROOT_DIR=uploads`, `UPLOAD_MAX_FILE_SIZE_MB=50`
+   - `UPLOAD_MAX_FILE_SIZE_MB=50`
    - `LLM_PROVIDER=ollama`, `LLM_BASE_URL=http://127.0.0.1:11434` — leave as-is; per the tradeoffs above this will just silently no-op in production. Don't point it at a real paid LLM unless you're intentionally taking on that cost.
    - `TRANSLATION_PROVIDER=libretranslate`, `LIBRETRANSLATE_URL=http://localhost:5001` — same, silently no-ops.
    - Leave every `WHATSAPP_*` var blank.
