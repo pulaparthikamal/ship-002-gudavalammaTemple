@@ -1,5 +1,4 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
-import path from 'path';
 import cors from 'cors';
 import helmet from 'helmet';
 import hpp from 'hpp';
@@ -18,6 +17,7 @@ import { notFoundHandler } from './middlewares/notFound.middleware';
 
 import routes from './routes';
 import { localeMiddleware } from './middlewares/locale.middleware';
+import uploadStreamRoutes from './modules/upload/upload.stream.route';
 
 const app: Express = express();
 
@@ -59,14 +59,16 @@ app.use(localeMiddleware);
 // Swagger Docs
 app.use(`${appConfig.apiPrefix}/docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Static file uploads
+// File uploads — served out of MongoDB GridFS (see upload.stream.route.ts),
+// not local disk: Render's free-tier disk is ephemeral and wipes local files
+// on every restart/redeploy.
 app.use(
   `${appConfig.apiPrefix}/uploads`,
   (_req: Request, res: Response, next: NextFunction) => {
     res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
     next();
   },
-  express.static(path.resolve(process.cwd(), envConfig.uploadRootDir))
+  uploadStreamRoutes
 );
 
 

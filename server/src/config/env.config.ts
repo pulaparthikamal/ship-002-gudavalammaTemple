@@ -31,7 +31,6 @@ export const envConfig = {
   rateLimitWindowMs: env.get('RATE_LIMIT_WINDOW_MS').default(900000000).asIntPositive(),
   rateLimitMax: env.get('RATE_LIMIT_MAX').default(100000000).asIntPositive(),
 
-  uploadRootDir: env.get('UPLOAD_ROOT_DIR').default('uploads').asString(),
   uploadMaxFileSizeMb: env.get('UPLOAD_MAX_FILE_SIZE_MB').default(50).asIntPositive(),
 
   frontendUrl: env.get('FRONTEND_URL').default('http://localhost:5173').asString(),

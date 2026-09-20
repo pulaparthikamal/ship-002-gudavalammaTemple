@@ -1,8 +1,7 @@
 import { randomUUID } from 'crypto';
-import { promises as fs } from 'fs';
 import path from 'path';
-import { appConfig } from '../../config/app.config';
 import { envConfig } from '../../config/env.config';
+import { getUploadsBucket } from '../../config/gridfs.config';
 import { HTTP_STATUS } from '../../constants/httpStatus.constants';
 import { AppError } from '../../utils/error.util';
 
@@ -162,14 +161,22 @@ export const uploadService = {
       relativePath = path.join('SocialMediaAutomation', subFolder);
     }
 
-    const absoluteDirectory = path.resolve(process.cwd(), envConfig.uploadRootDir, relativePath);
-    const absoluteFilePath = path.join(absoluteDirectory, storedFileName);
     // Normalize relativePath with forward slashes for the public URL
     const urlPath = relativePath.replace(/\\/g, '/');
-    const publicFilePath = `/uploads/${urlPath}/${storedFileName}`;
+    // Doubles as the GridFS filename — kept path-shaped so it stays readable
+    // in the bucket and collision-free across modules.
+    const storageKey = `${urlPath}/${storedFileName}`;
+    const publicFilePath = `/uploads/${storageKey}`;
 
-    await fs.mkdir(absoluteDirectory, { recursive: true });
-    await fs.writeFile(absoluteFilePath, fileBuffer);
+    await new Promise<void>((resolve, reject) => {
+      const uploadStream = getUploadsBucket().openUploadStream(storageKey, {
+        contentType: normalizedMimeType,
+        metadata: { moduleName: relativePath, mediaType },
+      });
+      uploadStream.once('finish', () => resolve());
+      uploadStream.once('error', reject);
+      uploadStream.end(fileBuffer);
+    });
 
     return {
       fileName: data.file.originalname,
